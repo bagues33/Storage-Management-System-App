@@ -128,7 +128,7 @@ class _LoginPageState extends State<LoginPage> {
                   child: const Text("Register",
                       style: TextStyle(fontSize: 18, color: Colors.white)),
                 ),
-                bodyMessage()
+                // bodyMessage()
               ],
             ),
           ),
@@ -137,18 +137,18 @@ class _LoginPageState extends State<LoginPage> {
     );
   }
 
-  Widget bodyMessage() {
-    var state = context.watch<LoginProvider>().loginState;
-    var username = context.watch<LoginProvider>().username;
-    switch (state) {
-      case StateLogin.initial:
-        return const SizedBox();
-      case StateLogin.success:
-        return Text('Selamat datang $username');
-      case StateLogin.error:
-        return Text(context.watch<LoginProvider>().messageError);
-      default:
-        return const SizedBox();
-    }
-  }
+  // Widget bodyMessage() {
+  //   var state = context.watch<LoginProvider>().loginState;
+  //   var username = context.watch<LoginProvider>().username;
+  //   switch (state) {
+  //     case StateLogin.initial:
+  //       return const SizedBox();
+  //     case StateLogin.success:
+  //       return Text('Selamat datang $username');
+  //     case StateLogin.error:
+  //       return Text(context.watch<LoginProvider>().messageError);
+  //     default:
+  //       return const SizedBox();
+  //   }
+  // }
 }

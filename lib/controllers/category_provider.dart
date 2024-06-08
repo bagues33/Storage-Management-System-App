@@ -17,13 +17,14 @@ class CategoryProvider extends ChangeNotifier {
 
   Future getCategory() async {
     try {
-      var response = await Dio().get('http://192.168.100.178:3000/api/category');
+      var response = await Dio().get('http://192.168.100.178:3000/api/categories');
       var result = CategoryModel.fromJson(response.data);
       if (result.data!.isEmpty) {
         state = CategoryState.nodata;
       } else {
         state = CategoryState.success;
         listCategory = result.data;
+        print('listCategory: $listCategory');
       }
     } catch (e) {
       state = CategoryState.error;
@@ -40,7 +41,7 @@ class CategoryProvider extends ChangeNotifier {
         "name": nameController.text,
       };
       await Dio().post(
-        'http://192.168.100.178:3000/api/category',
+        'http://192.168.100.178:3000/api/categories',
         data: requestModel,
       );
 
@@ -55,7 +56,7 @@ class CategoryProvider extends ChangeNotifier {
   Future detailCategory(int id) async {
     try {
       messageError = '';
-      var response = await Dio().get('http://192.168.100.178:3000/api/category/$id');
+      var response = await Dio().get('http://192.168.100.178:3000/api/categories/$id');
       var result = CategoryResponseModel.fromJson(response.data);
       idDataSelected = id;
       nameController.text = result.data!.name ?? '-';
@@ -75,7 +76,7 @@ class CategoryProvider extends ChangeNotifier {
         "id": idDataSelected,
         "name": nameController.text,
       };
-      await Dio().put('http://192.168.100.178:3000/api/category', data: requestModel);
+      await Dio().put('http://192.168.100.178:3000/api/categories', data: requestModel);
       // var result = CategoryResponseModel.fromJson(response.data);
       Navigator.pop(context);
       getCategory();
@@ -87,7 +88,7 @@ class CategoryProvider extends ChangeNotifier {
 
   Future deleteCategory(BuildContext context, int id) async {
     try {
-      await Dio().delete('http://192.168.100.178:3000/api/category/$id');
+      await Dio().delete('http://192.168.100.178:3000/api/categories/$id');
       getCategory();
     } catch (e) {
       messageError = e.toString();

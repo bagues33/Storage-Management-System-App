@@ -45,8 +45,9 @@ class LoginProvider extends ChangeNotifier {
         await prefs.setString('token', data['token']);
         await prefs.setInt('userId', data['user']['id']);
         await prefs.setString('username', data['user']['username']);
+        usernameController.clear();
+        passwordController.clear();
         pushNotificationService.showNotification('Success', 'Congratulation. You have successfully for login');
-        showAlertSuccess(context);
         Navigator.pushReplacement(
           context,
           MaterialPageRoute(builder: (context) => ProductPage()),
@@ -76,25 +77,6 @@ showAlertError(BuildContext context) {
     builder: (context) {
       return AlertDialog(
         title: const Text('Periksa kelengkapan datamu!'),
-        actions: [
-          ElevatedButton(
-              onPressed: () {
-                Navigator.pop(context);
-              },
-              child: const Text('Ok'))
-        ],
-      );
-    },
-  );
-}
-
-showAlertSuccess(BuildContext context) {
-  showDialog(
-    context: context,
-    builder: (context) {
-      return AlertDialog(
-        title: const Text('Selamat!'),
-        content: const Text('Login berhasil!'),
         actions: [
           ElevatedButton(
               onPressed: () {

@@ -1,5 +1,7 @@
 // ignore_for_file: use_build_context_synchronously
 
+import 'dart:convert';
+
 import 'package:flutter/material.dart';
 import 'package:storage_management_app/models/product_model.dart';
 import 'package:dio/dio.dart';
@@ -22,8 +24,9 @@ class ProductProvider extends ChangeNotifier {
 
   Future getProduct() async {
     try {
-      var response = await Dio().get('http://192.168.100.178:3000/api/product');
+      var response = await Dio().get('http://192.168.100.178:3000/api/products');
       var result = ProductModel.fromJson(response.data);
+      print('result: $result');
       if (result.data!.isEmpty) {
         state = ProductState.nodata;
       } else {
@@ -50,7 +53,7 @@ class ProductProvider extends ChangeNotifier {
         "category_id": categoryIdController.text,
       };
       await Dio().post(
-        'http://192.168.100.178:3000/api/Product',
+        'http://192.168.100.178:3000/api/products',
         data: requestModel,
       );
 
@@ -65,16 +68,16 @@ class ProductProvider extends ChangeNotifier {
   Future detailProduct(int id) async {
     try {
       messageError = '';
-      var response = await Dio().get('http://192.168.100.178:3000/api/Product/$id');
+      var response = await Dio().get('http://192.168.100.178:3000/api/products/$id');
       var result = ProductResponseModel.fromJson(response.data);
       idDataSelected = id;
       nameController.text = result.data!.name ?? '-';
-      qtyController.text = result.data!.qty ?? '-';
-      imageController.text = result.data!.image_url ?? '-';
-      createdByController.text = result.data!.created_by.toString();
-      updatedByController.text = result.data!.updated_by.toString();
-      categoryIdController.text = result.data!.category_id.toString();
-
+      qtyController.text = result.data!.qty.toString();
+      imageController.text = result.data!.imageUrl ?? '-';
+      createdByController.text = result.data!.createdBy.toString();
+      updatedByController.text = result.data!.updatedBy.toString();
+      categoryIdController.text = result.data!.categoryId.toString();
+      
     } catch (e) {
       state = ProductState.error;
       messageError = e.toString();
@@ -95,7 +98,7 @@ class ProductProvider extends ChangeNotifier {
         "updated_by": updatedByController.text,
         "category_id": categoryIdController.text,
       };
-      await Dio().put('http://192.168.100.178:3000/api/Product', data: requestModel);
+      await Dio().put('http://192.168.100.178:3000/api/products', data: requestModel);
       // var result = ProductResponseModel.fromJson(response.data);
       Navigator.pop(context);
       getProduct();
@@ -107,7 +110,7 @@ class ProductProvider extends ChangeNotifier {
 
   Future deleteProduct(BuildContext context, int id) async {
     try {
-      await Dio().delete('http://192.168.100.178:3000/api/Product/$id');
+      await Dio().delete('http://192.168.100.178:3000/api/products/$id');
       getProduct();
     } catch (e) {
       messageError = e.toString();
