@@ -6,6 +6,12 @@ require("dotenv").config()
 
 const register = async (input, res) => {
     try {
+        // Check if the username already exists
+        const userExists = await Users.findOne({ where: { username: input.username } });
+        if (userExists) {
+            return res.status(422).json({ error: 'Username already exists' });
+        }
+
         const save = await Users.create(input);
         res.json(save).status(200)
     } catch (error) {
@@ -32,7 +38,7 @@ const authentication = async (req, res) => {
             jwt.sign({ userToken }, process.env.JWT_KEY, {
                 expiresIn: '365d' //set exipre token
             }, (err, token) => {
-                res.json({ token: token }).status(200)
+                res.status(200).json({ user: userToken, token: token })
             });
         }
     } catch (error) {

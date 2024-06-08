@@ -2,7 +2,22 @@ const { product } = require('../models');
 
 class ProductController {
     static getAllProducts(req, res) {
-        product.findAll()
+        product.findAll({
+            include: [
+                {
+                    association: 'category',
+                    attributes: ['id', 'name']
+                },
+                {
+                    association: 'createdBy',
+                    attributes: ['id', 'username', 'image']
+                },
+                {
+                    association: 'updatedBy',
+                    attributes: ['id', 'username', 'image']
+                }
+            ]
+        })
             .then((products) => {
                 res.status(200).json(products);
             })
@@ -12,13 +27,28 @@ class ProductController {
     }
 
     static getProduct(req, res) {
-        product.findByPk(req.params.id)
-            .then((product) => {
-                res.status(200).json(product);
-            })
-            .catch((err) => {
-                res.status(500).json(err);
-            });
+        product.findByPk(req.params.id, {
+            include: [
+                {
+                    association: 'category',
+                    attributes: ['id', 'name']
+                },
+                {
+                    association: 'createdBy',
+                    attributes: ['id', 'username', 'image']
+                },
+                {
+                    association: 'updatedBy',
+                    attributes: ['id', 'username', 'image']
+                }
+            ]
+        })
+        .then((product) => {
+            res.status(200).json(product);
+        })
+        .catch((err) => {
+            res.status(500).json(err);
+        });
     }
 
     static createProduct(req, res) {

@@ -16,13 +16,13 @@ const upload = multer({
 
     limits : { fileSize: 3 * 1024 * 1024 },
     
-    fileFilter: function(req, file, cb){
-        if(file.mimetype == "image/png" || file.mimetype == "image/jpg" || file.mimetype == "image/jpeg"){
-            cb(null, true);
-        }else{
-            return cb(new Error('Only .png, .jpg and .jpeg format allowed!'));
-        }
-    }
+    // fileFilter: function(req, file, cb){
+    //     if(file.mimetype == "image/png" || file.mimetype == "image/jpg" || file.mimetype == "image/jpeg"){
+    //         cb(null, true);
+    //     }else{
+    //         return cb(new Error('Only .png, .jpg and .jpeg format allowed!'));
+    //     }
+    // }
     
 });
 

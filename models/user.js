@@ -11,6 +11,16 @@ module.exports = (sequelize, DataTypes) => {
      */
     static associate(models) {
       // define association here
+      user.hasMany(models.product, {
+        foreignKey: 'created_by',
+        as: 'createdBy',
+        onDelete: 'CASCADE',
+      });
+      user.hasMany(models.product, {
+        foreignKey: 'updated_by',
+        as: 'updatedBy',
+        onDelete: 'CASCADE',
+      });
     }
   }
   user.init({
