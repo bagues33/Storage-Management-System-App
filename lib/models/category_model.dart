@@ -3,40 +3,36 @@ class CategoryModel {
 
   CategoryModel({this.data});
 
-  CategoryModel.fromJson(Map<String, dynamic> json) {
-    if (json['data'] != null) {
-      data = <Data>[];
-      json['data'].forEach((v) {
-        data!.add(Data.fromJson(v));
-      });
-    }
+  CategoryModel.fromJson(List<dynamic> json) {
+    data = json.map((item) => Data.fromJson(item)).toList();
   }
 
-  Map<String, dynamic> toJson() {
-    final Map<String, dynamic> data = <String, dynamic>{};
-    if (this.data != null) {
-      data['data'] = this.data!.map((v) => v.toJson()).toList();
-    }
-    return data;
+  List<dynamic> toJson() {
+    return this.data!.map((v) => v.toJson()).toList();
   }
 }
 
 class Data {
   int? id;
   String? name;
+  String? createdAt;
+  String? updatedAt;
 
-  Data({this.id, this.name});
+  Data({this.id, this.name, this.createdAt, this.updatedAt});
 
   Data.fromJson(Map<String, dynamic> json) {
     id = json['id'];
     name = json['name'];
+    createdAt = json['createdAt'];
+    updatedAt = json['updatedAt'];
   }
 
   Map<String, dynamic> toJson() {
-    final Map<String, dynamic> data = <String, dynamic>{};
-    data['id'] = this.id;
-    data['name'] = this.name;
-  
-    return data;
+    return {
+      'id': this.id,
+      'name': this.name,
+      'createdAt': this.createdAt,
+      'updatedAt': this.updatedAt,
+    };
   }
 }

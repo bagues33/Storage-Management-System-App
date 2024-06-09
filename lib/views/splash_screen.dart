@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 
-import 'package:shared_preferences/shared_preferences.dart';  
+import 'package:shared_preferences/shared_preferences.dart';
+import 'package:storage_management_app/views/home_screen.dart';  
 import 'package:storage_management_app/views/product/product_page.dart';
 import 'login_page.dart';
 
@@ -32,7 +33,7 @@ class _SplashScreenState extends State<SplashScreen> {
         Navigator.pushReplacement(
             context,
             MaterialPageRoute(
-              builder: (context) => ProductPage(),
+              builder: (context) => HomeScreen(),
             ));
       }
     });

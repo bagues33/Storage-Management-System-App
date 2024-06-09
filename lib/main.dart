@@ -2,13 +2,13 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:storage_management_app/controllers/category_provider.dart';
+import 'package:storage_management_app/controllers/register_provider.dart';
 import 'package:storage_management_app/utils/push_notification_service.dart';
 import 'package:storage_management_app/views/splash_screen.dart';
 
 import 'controllers/login_provider.dart';
 import 'controllers/main_provider.dart';
 import 'controllers/product_provider.dart';
-import 'controllers/register_provider.dart';
 import 'firebase_options.dart';
 import 'views/category/category_page.dart';
 import 'views/login_page.dart';

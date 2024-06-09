@@ -6,6 +6,7 @@ import 'package:storage_management_app/views/login_page.dart';
 import 'package:storage_management_app/views/product/edit_form_product_page.dart';
 import 'package:storage_management_app/views/product/form_product_page.dart';
 import 'package:storage_management_app/controllers/product_provider.dart';
+import 'package:storage_management_app/views/profile_page.dart';
 
 class ProductPage extends StatefulWidget {
   const ProductPage({super.key});
@@ -26,20 +27,25 @@ class _ProductPageState extends State<ProductPage> {
     return Scaffold(
       appBar: AppBar(
         backgroundColor: Colors.amber,
-        leading: IconButton(onPressed: () {}, icon: const Icon(Icons.home)),
+        // leading: IconButton(onPressed: () {}, icon: const Icon(Icons.home)),
         title: const Text('Product Page'),
         actions: [
           IconButton(
-            icon: const Icon(Icons.logout),
+            icon: const Icon(Icons.person),
             onPressed: () async {
-              SharedPreferences prefs = await SharedPreferences.getInstance();
-              await prefs.remove('token');
-              await prefs.remove('userId');
-              await prefs.remove('username');
-              Navigator.pushReplacement(
+             Navigator.push(
                 context,
-                MaterialPageRoute(builder: (context) => LoginPage()),
-              );
+              MaterialPageRoute(
+                builder: (context) => const ProfilePage(),
+              ));
+              // SharedPreferences prefs = await SharedPreferences.getInstance();
+              // await prefs.remove('token');
+              // await prefs.remove('userId');
+              // await prefs.remove('username');
+              // Navigator.pushReplacement(
+              //   context,
+              //   MaterialPageRoute(builder: (context) => LoginPage()),
+              // );
             },
           ),
         ],
@@ -54,33 +60,24 @@ class _ProductPageState extends State<ProductPage> {
           },
           child: const Icon(Icons.add),
         ),
-        body: Center(
-          child: Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 30),
-            child: Column(  // Use Column or ListView to hold multiple widgets
-              children: [
-                Text('Product Page'),
-                ElevatedButton(
-                  onPressed: () {
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                        builder: (context) => const CategoryPage(),
-                      ),
-                    );
+        body: Container(
+          padding: const EdgeInsets.all(10),
+          child: Column(
+            children: [
+              Expanded(
+                child: Consumer<ProductProvider>(
+                  builder: (context, value, child) {
+                    return bodyData(context, value.state);
                   },
-                  child: const Text('Add Category'),
                 ),
-                bodyData(context, context.watch<ProductProvider>().state),
-              ],
-            ),
+              ),
+            ],
           ),
         ),
       );
   }
 
   Widget bodyData(BuildContext context, ProductState state) {
-    Text('Product Page');
     switch (state) {
       case ProductState.success:
         var dataResult = context.watch<ProductProvider>().listProduct;

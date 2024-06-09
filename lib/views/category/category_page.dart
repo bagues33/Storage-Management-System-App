@@ -3,6 +3,7 @@ import 'package:storage_management_app/controllers/category_provider.dart';
 import 'package:provider/provider.dart';
 import 'package:storage_management_app/views/category/edit_form_category_page.dart';
 import 'package:storage_management_app/views/category/form_category_page.dart';
+import 'package:storage_management_app/views/profile_page.dart';
 
 class CategoryPage extends StatefulWidget {
   const CategoryPage({super.key});
@@ -23,37 +24,43 @@ class _CategoryPageState extends State<CategoryPage> {
     return Scaffold(
       appBar: AppBar(
         backgroundColor: Colors.amber,
-        leading: IconButton(onPressed: () {}, icon: const Icon(Icons.home)),
+        // leading: IconButton(onPressed: () {}, icon: const Icon(Icons.home)),
         title: const Text('Category Page'),
+        actions: [
+          IconButton(
+            icon: const Icon(Icons.person),
+            onPressed: () async {
+             Navigator.push(
+                context,
+              MaterialPageRoute(
+                builder: (context) => const ProfilePage(),
+              ));
+            },
+          ),
+        ],
       ),
       floatingActionButton: FloatingActionButton(
         onPressed: () {
           Navigator.push(
               context,
               MaterialPageRoute(
-                builder: (context) => const FormCategory(),
+                builder: (context) => const FormCategoryPage(),
               ));
         },
         child: const Icon(Icons.add),
       ),
-      body: Center(
-        child: Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 30),
-          child: Column(
-            children: [
-              SizedBox(
-                height: 20,
+      body: Container(
+        padding: const EdgeInsets.all(10),
+        child: Column(
+          children: [
+            Expanded(
+              child: Consumer<CategoryProvider>(
+                builder: (context, value, child) {
+                  return bodyData(context, value.state);
+                },
               ),
-              Text(
-                'List Category',
-                style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
-              ),
-              SizedBox(
-                height: 20,
-              ),
-              bodyData(context, context.watch<CategoryProvider>().state),
-            ],
-          ),
+            ),
+          ],
         ),
       ),
     );
@@ -102,14 +109,39 @@ class _CategoryPageState extends State<CategoryPage> {
                             width: 10,
                           ),
                           InkWell(
-                              onTap: () => context
-                                  .read<CategoryProvider>()
-                                  .deleteCategory(
-                                      context, dataResult[index].id ?? 0),
-                              child: const Icon(
-                                Icons.delete,
-                                color: Colors.red,
-                              ))
+                            onTap: () {
+                              showDialog(
+                                context: context,
+                                builder: (BuildContext context) {
+                                  return AlertDialog(
+                                    title: Text('Delete Confirmation'),
+                                    content: Text('Are you sure you want to delete this category?'),
+                                    actions: <Widget>[
+                                      TextButton(
+                                        child: Text('No'),
+                                        onPressed: () {
+                                          Navigator.of(context).pop();
+                                        },
+                                      ),
+                                      TextButton(
+                                        child: Text('Yes'),
+                                        onPressed: () {
+                                          context
+                                            .read<CategoryProvider>()
+                                            .deleteCategory(context, dataResult[index].id ?? 0);
+                                          Navigator.of(context).pop();
+                                        },
+                                      ),
+                                    ],
+                                  );
+                                },
+                              );
+                            },
+                            child: const Icon(
+                              Icons.delete,
+                              color: Colors.red,
+                            ),
+                          )
                         ],
                       )
                     ],

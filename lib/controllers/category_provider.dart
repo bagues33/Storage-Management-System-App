@@ -44,8 +44,26 @@ class CategoryProvider extends ChangeNotifier {
         'http://192.168.100.178:3000/api/categories',
         data: requestModel,
       );
-
-      Navigator.pop(context);
+      nameController.clear();
+      showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: Text('Success'),
+          content: Text('Category has been added successfully.'),
+          actions: <Widget>[
+            TextButton(
+              child: Text('OK'),
+              onPressed: () {
+                Navigator.of(context).pop();
+                Navigator.pop(context);
+              },
+            ),
+          ],
+        );
+      },
+    );
+    // Navigator.pop(context);
       getCategory();
     } catch (e) {
       messageError = e.toString();
