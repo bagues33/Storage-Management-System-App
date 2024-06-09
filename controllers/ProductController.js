@@ -1,4 +1,5 @@
 const { product } = require('../models');
+const { check } = require('express-validator');
 
 class ProductController {
     static getAllProducts(req, res) {
@@ -52,6 +53,10 @@ class ProductController {
     }
 
     static createProduct(req, res) {
+        const errors = validationResult(req);
+        if (!errors.isEmpty()) {
+            return res.status(400).json(errors.array());
+        }
         product.create({
             name: req.body.name,
             qty: req.body.qty,
@@ -60,6 +65,7 @@ class ProductController {
             updated_by: req.body.updated_by,
             category_id: req.body.category_id
         })
+
         .then((product) => {
             res.status(201).json(product);
         })
@@ -69,6 +75,10 @@ class ProductController {
     }
 
     static updateProduct(req, res) {
+        const errors = validationResult(req);
+        if (!errors.isEmpty()) {
+            return res.status(400).json(errors.array());
+        }
         product.update({
             name: req.body.name,
             qty: req.body.qty,

@@ -1,4 +1,5 @@
 const { category } = require('../models');
+const { validationResult } = require('express-validator')
 
 class CategoryController {
     static getAllCategories(req, res) {
@@ -22,8 +23,13 @@ class CategoryController {
     }
 
     static createCategory(req, res) {
+        const errors = validationResult(req);
+        if (!errors.isEmpty()) {
+            return res.status(400).json(errors.array());
+        }
+
         category.create({
-            name: req.body.name,
+            name: req.body.name
         })
         .then((category) => {
             res.status(201).json(category);
@@ -34,6 +40,11 @@ class CategoryController {
     }
 
     static updateCategory(req, res) {
+        const errors = validationResult(req);
+        if (!errors.isEmpty()) {
+            return res.status(400).json(errors.array());
+        }
+
         category.update({
             name: req.body.name
         }, {
