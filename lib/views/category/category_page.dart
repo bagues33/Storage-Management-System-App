@@ -30,11 +30,11 @@ class _CategoryPageState extends State<CategoryPage> {
           IconButton(
             icon: const Icon(Icons.person),
             onPressed: () async {
-             Navigator.push(
-                context,
-              MaterialPageRoute(
-                builder: (context) => const ProfilePage(),
-              ));
+              Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => const ProfilePage(),
+                  ));
             },
           ),
         ],
@@ -66,7 +66,7 @@ class _CategoryPageState extends State<CategoryPage> {
     );
   }
 
-   Widget bodyData(BuildContext context, CategoryState state) {
+  Widget bodyData(BuildContext context, CategoryState state) {
     Text('Product Page');
     switch (state) {
       case CategoryState.success:
@@ -115,7 +115,8 @@ class _CategoryPageState extends State<CategoryPage> {
                                 builder: (BuildContext context) {
                                   return AlertDialog(
                                     title: Text('Delete Confirmation'),
-                                    content: Text('Are you sure you want to delete this category?'),
+                                    content: Text(
+                                        'Are you sure you want to delete this category?'),
                                     actions: <Widget>[
                                       TextButton(
                                         child: Text('No'),
@@ -127,8 +128,9 @@ class _CategoryPageState extends State<CategoryPage> {
                                         child: Text('Yes'),
                                         onPressed: () {
                                           context
-                                            .read<CategoryProvider>()
-                                            .deleteCategory(context, dataResult[index].id ?? 0);
+                                              .read<CategoryProvider>()
+                                              .deleteCategory(context,
+                                                  dataResult[index].id ?? 0);
                                           Navigator.of(context).pop();
                                         },
                                       ),

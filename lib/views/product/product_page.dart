@@ -136,14 +136,39 @@ class _ProductPageState extends State<ProductPage> {
                             width: 10,
                           ),
                           InkWell(
-                              onTap: () => context
-                                  .read<ProductProvider>()
-                                  .deleteProduct(
-                                      context, dataResult[index].id ?? 0),
+                              onTap: () {
+                                showDialog(
+                                  context: context,
+                                  builder: (BuildContext context) {
+                                    return AlertDialog(
+                                      title: Text('Confirm Delete'),
+                                      content: Text('Are you sure you want to delete this product?'),
+                                      actions: <Widget>[
+                                        TextButton(
+                                          child: Text('Cancel'),
+                                          onPressed: () {
+                                            Navigator.of(context).pop();
+                                          },
+                                        ),
+                                        TextButton(
+                                          child: Text('Delete'),
+                                          onPressed: () {
+                                            context
+                                                .read<ProductProvider>()
+                                                .deleteProduct(context, dataResult[index].id ?? 0);
+                                            Navigator.of(context).pop();
+                                          },
+                                        ),
+                                      ],
+                                    );
+                                  },
+                                );
+                              },
                               child: const Icon(
                                 Icons.delete,
                                 color: Colors.red,
-                              ))
+                              ),
+                          )
                         ],
                       )
                     ],

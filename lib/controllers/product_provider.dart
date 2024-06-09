@@ -3,6 +3,7 @@
 import 'dart:convert';
 
 import 'package:flutter/material.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'package:storage_management_app/models/product_model.dart';
 import 'package:dio/dio.dart';
 import 'package:storage_management_app/models/Product_response_model.dart';
@@ -21,6 +22,12 @@ class ProductProvider extends ChangeNotifier {
   var messageError = '';
 
   int idDataSelected = 0;
+
+  Future<String> getUserId() async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    String? userId = prefs.getString('userId');
+    return userId ?? '';
+  }
 
   Future getProduct() async {
     try {
@@ -44,20 +51,38 @@ class ProductProvider extends ChangeNotifier {
     BuildContext context,
   ) async {
     try {
+      state = ProductState.loading;
+      String userId = await getUserId();
       var requestModel = {
         "name": nameController.text,
         "qty": qtyController.text,
         "image_url": imageController.text,
-        "created_by": createdByController.text,
-        "updated_by": updatedByController.text,
+        "created_by": userId,
+        "updated_by": userId,
         "category_id": categoryIdController.text,
       };
       await Dio().post(
         'http://192.168.100.178:3000/api/products',
         data: requestModel,
       );
-
-      Navigator.pop(context);
+      showDialog(
+        context: context,
+        builder: (context) {
+          return AlertDialog(
+            title: Text('Success'),
+            content: Text('Data berhasil ditambahkan'),
+            actions: [
+              TextButton(
+                onPressed: () {
+                  Navigator.pop(context);
+                  Navigator.pop(context);
+                },
+                child: Text('OK'),
+              )
+            ],
+          );
+        },
+      );
       getProduct();
     } catch (e) {
       messageError = e.toString();
@@ -89,16 +114,17 @@ class ProductProvider extends ChangeNotifier {
     BuildContext context,
   ) async {
     try {
+      state = ProductState.loading;
+      var id = idDataSelected;
+      String userId = await getUserId();
       var requestModel = {
-        "id": idDataSelected,
         "name": nameController.text,
         "qty": qtyController.text,
         "image_url": imageController.text,
-        "created_by": createdByController.text,
-        "updated_by": updatedByController.text,
+        "updated_by": userId,
         "category_id": categoryIdController.text,
       };
-      await Dio().put('http://192.168.100.178:3000/api/products', data: requestModel);
+      await Dio().put('http://192.168.100.178:3000/api/products/$id', data: requestModel);
       // var result = ProductResponseModel.fromJson(response.data);
       Navigator.pop(context);
       getProduct();
@@ -110,6 +136,7 @@ class ProductProvider extends ChangeNotifier {
 
   Future deleteProduct(BuildContext context, int id) async {
     try {
+      state = ProductState.loading;
       await Dio().delete('http://192.168.100.178:3000/api/products/$id');
       getProduct();
     } catch (e) {

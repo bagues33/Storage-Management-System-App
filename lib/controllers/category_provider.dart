@@ -17,8 +17,10 @@ class CategoryProvider extends ChangeNotifier {
 
   Future getCategory() async {
     try {
-      var response = await Dio().get('http://192.168.100.178:3000/api/categories');
+      var response =
+          await Dio().get('http://192.168.100.178:3000/api/categories');
       var result = CategoryModel.fromJson(response.data);
+      messageError = '';
       if (result.data!.isEmpty) {
         state = CategoryState.nodata;
       } else {
@@ -37,6 +39,7 @@ class CategoryProvider extends ChangeNotifier {
     BuildContext context,
   ) async {
     try {
+      state = CategoryState.loading;
       var requestModel = {
         "name": nameController.text,
       };
@@ -44,42 +47,48 @@ class CategoryProvider extends ChangeNotifier {
         'http://192.168.100.178:3000/api/categories',
         data: requestModel,
       );
+      messageError = '';
       nameController.clear();
       showDialog(
-      context: context,
-      builder: (BuildContext context) {
-        return AlertDialog(
-          title: Text('Success'),
-          content: Text('Category has been added successfully.'),
-          actions: <Widget>[
-            TextButton(
-              child: Text('OK'),
-              onPressed: () {
-                Navigator.of(context).pop();
-                Navigator.pop(context);
-              },
-            ),
-          ],
-        );
-      },
-    );
-    // Navigator.pop(context);
+        context: context,
+        builder: (BuildContext context) {
+          return AlertDialog(
+            title: Text('Success'),
+            content: Text('Category has been added successfully.'),
+            actions: <Widget>[
+              TextButton(
+                child: Text('OK'),
+                onPressed: () {
+                  Navigator.of(context).pop();
+                  Navigator.pop(context);
+                },
+              ),
+            ],
+          );
+        },
+      );
       getCategory();
-    } catch (e) {
-      messageError = e.toString();
+    } on DioException catch (e) {
+      var error = e.response!.data[0]['msg'];
+      print('error insert category: $error');
+      showAlertDialog(context, 'Error', error);
     }
     notifyListeners();
   }
 
   Future detailCategory(int id) async {
     try {
+      state = CategoryState.loading;
+      print('id Category: $id');
       messageError = '';
-      var response = await Dio().get('http://192.168.100.178:3000/api/categories/$id');
+      var response =
+          await Dio().get('http://192.168.100.178:3000/api/categories/$id');
       var result = CategoryResponseModel.fromJson(response.data);
-      idDataSelected = id;
-      nameController.text = result.data!.name ?? '-';
-
+      nameController.text = result.name!;
+      print('nameController: ${nameController.text}');
+      state = CategoryState.success;
     } catch (e) {
+      print('error Detail Category: $e');
       state = CategoryState.error;
       messageError = e.toString();
     }
@@ -90,13 +99,48 @@ class CategoryProvider extends ChangeNotifier {
     BuildContext context,
   ) async {
     try {
+      state = CategoryState.loading;
       var requestModel = {
-        "id": idDataSelected,
         "name": nameController.text,
       };
-      await Dio().put('http://192.168.100.178:3000/api/categories', data: requestModel);
+      await Dio().put(
+          'http://192.168.100.178:3000/api/categories/$idDataSelected',
+          data: requestModel);
       // var result = CategoryResponseModel.fromJson(response.data);
-      Navigator.pop(context);
+      messageError = '';
+      nameController.clear();
+      showDialog(
+        context: context,
+        builder: (BuildContext context) {
+          return AlertDialog(
+            title: Text('Success'),
+            content: Text('Category has been updated successfully.'),
+            actions: <Widget>[
+              TextButton(
+                child: Text('OK'),
+                onPressed: () {
+                  Navigator.of(context).pop();
+                  Navigator.pop(context);
+                },
+              ),
+            ],
+          );
+        },
+      );
+      getCategory();
+    } on DioException catch (e) {
+      var error = e.response!.data[0]['msg'];
+      print('error update category: $error');
+      showAlertDialog(context, 'Error', error);
+    }
+    notifyListeners();
+  }
+
+  Future deleteCategory(BuildContext context, int id) async {
+    try {
+      state = CategoryState.loading;
+      await Dio().delete('http://192.168.100.178:3000/api/categories/$id');
+      messageError = '';
       getCategory();
     } catch (e) {
       messageError = e.toString();
@@ -104,14 +148,24 @@ class CategoryProvider extends ChangeNotifier {
     notifyListeners();
   }
 
-  Future deleteCategory(BuildContext context, int id) async {
-    try {
-      await Dio().delete('http://192.168.100.178:3000/api/categories/$id');
-      getCategory();
-    } catch (e) {
-      messageError = e.toString();
-    }
-    notifyListeners();
+  showAlertDialog(BuildContext context, String title, String content) {
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: Text(title),
+          content: Text(content),
+          actions: <Widget>[
+            TextButton(
+              child: Text('OK'),
+              onPressed: () {
+                Navigator.of(context).pop();
+              },
+            ),
+          ],
+        );
+      },
+    );
   }
 }
 

@@ -33,7 +33,7 @@ class _EditFormProductState extends State<EditFormProduct> {
         child: ListView(
           children: [
             const Text(
-              'Subject',
+              'Name',
               style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
             ),
             TextFormField(
@@ -51,7 +51,7 @@ class _EditFormProductState extends State<EditFormProduct> {
               height: 10,
             ),
             const Text(
-              'Product',
+              'Qty',
               style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
             ),
             TextFormField(
@@ -65,6 +65,10 @@ class _EditFormProductState extends State<EditFormProduct> {
                 decoration: const InputDecoration(
                     border: OutlineInputBorder(
                         borderRadius: BorderRadius.all(Radius.circular(10))))),
+            const Text(
+              'Image Url',
+              style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+            ),
             TextFormField(
                 controller: productProvider.imageController,
                 validator: (value) {
@@ -76,7 +80,13 @@ class _EditFormProductState extends State<EditFormProduct> {
                 decoration: const InputDecoration(
                     border: OutlineInputBorder(
                         borderRadius: BorderRadius.all(Radius.circular(10))))),
-            // show DropdownButtonFormField edit
+            const SizedBox(
+              height: 10,
+            ),
+            const Text(
+              'Category',
+              style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+            ),
             DropdownButtonFormField(
               decoration: const InputDecoration(
                   border: OutlineInputBorder(
@@ -94,10 +104,6 @@ class _EditFormProductState extends State<EditFormProduct> {
                 productProvider.categoryIdController.text = value.toString();
               },
             ),
-            const SizedBox(
-              height: 10,
-            ),
-            
             const SizedBox(
               height: 10,
             ),
