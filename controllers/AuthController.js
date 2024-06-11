@@ -46,6 +46,37 @@ const authentication = async (req, res) => {
     }
 }
 
+const updateProfile = async (req, res) => {
+    try {
+        const id = req.body.id
+        const username = req.body.username
+        const password = req.body.password
+        const image_name = req.file ? req.file.filename : null
+        const passwordToSave = passwordHash.generate(password)
+        const data = {
+            username: username.trim(),
+            password: passwordToSave,
+            image: image_name,
+        }
+
+        const update = await Users.update(data, { where: { id: id } });
+        res.json(update).status(200)
+    } catch (error) {
+        res.json(error).status(422)
+    }
+}
+
+const getUser = async (req, res) => {
+    try {
+        const id = req.params.id
+        const user = await Users.findOne({ where: { id: id } })
+        res.json(user).status(200)
+    }
+    catch (error) {
+        res.json(error).status(422)
+    }
+}
+
 module.exports = {
-    register, authentication
+    register, authentication, updateProfile, getUser
 }

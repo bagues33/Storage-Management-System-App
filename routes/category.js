@@ -3,7 +3,7 @@ const CategoryController = require('../controllers/CategoryController');
 const { check } = require('express-validator');
 
 const checkValidation = [
-    check('name').isLength({ min: 3 }).withMessage('Name must be at least 3 characters long'),
+    check('name').isLength({ min: 2 }).withMessage('Name must be at least 3 characters long'),
 ];
 
 categoryRoutes.get('/', CategoryController.getAllCategories);

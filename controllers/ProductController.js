@@ -1,5 +1,5 @@
 const { product } = require('../models');
-const { check } = require('express-validator');
+const { validationResult } = require('express-validator');
 
 class ProductController {
     static getAllProducts(req, res) {
