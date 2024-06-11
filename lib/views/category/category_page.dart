@@ -22,9 +22,14 @@ class _CategoryPageState extends State<CategoryPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: Color.fromRGBO(255,247,233,1),
       appBar: AppBar(
-        backgroundColor: Colors.amber,
         // leading: IconButton(onPressed: () {}, icon: const Icon(Icons.home)),
+        backgroundColor: Color.fromRGBO(255,247,233,1),
+        titleTextStyle: const TextStyle(
+          color: Colors.black,
+          fontSize: 24,
+          ),
         title: const Text('Category Page'),
         actions: [
           IconButton(
@@ -79,77 +84,76 @@ class _CategoryPageState extends State<CategoryPage> {
             shape: const RoundedRectangleBorder(
                 borderRadius: BorderRadius.all(Radius.circular(20)),
                 side: BorderSide(color: Colors.black)),
-            child: Row(
-              mainAxisSize: MainAxisSize.max,
-              children: [
-                Expanded(
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
+            child: Padding(
+              padding: const EdgeInsets.all(10.0),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    dataResult[index].name ?? '',
+                    style: const TextStyle(
+                        fontWeight: FontWeight.bold, fontSize: 20),
+                  ),
+                  const SizedBox(
+                    height: 10,
+                  ),
+                  Row(
                     children: [
-                      Text(
-                        dataResult[index].name ?? '',
-                        style: const TextStyle(
-                            fontWeight: FontWeight.bold, fontSize: 20),
-                      ),
-                      Row(
-                        children: [
-                          InkWell(
-                              onTap: () => Navigator.push(
-                                  context,
-                                  MaterialPageRoute(
-                                    builder: (context) => EditFormCategory(
-                                      id: dataResult[index].id ?? 0,
-                                    ),
-                                  )),
-                              child: const Icon(
-                                Icons.edit,
-                                color: Colors.blue,
+                      InkWell(
+                          onTap: () => Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                builder: (context) => EditFormCategory(
+                                  id: dataResult[index].id ?? 0,
+                                ),
                               )),
-                          const SizedBox(
-                            width: 10,
-                          ),
-                          InkWell(
-                            onTap: () {
-                              showDialog(
-                                context: context,
-                                builder: (BuildContext context) {
-                                  return AlertDialog(
-                                    title: Text('Delete Confirmation'),
-                                    content: Text(
-                                        'Are you sure you want to delete this category?'),
-                                    actions: <Widget>[
-                                      TextButton(
-                                        child: Text('No'),
-                                        onPressed: () {
-                                          Navigator.of(context).pop();
-                                        },
-                                      ),
-                                      TextButton(
-                                        child: Text('Yes'),
-                                        onPressed: () {
-                                          context
-                                              .read<CategoryProvider>()
-                                              .deleteCategory(context,
-                                                  dataResult[index].id ?? 0);
-                                          Navigator.of(context).pop();
-                                        },
-                                      ),
-                                    ],
-                                  );
-                                },
+                          child: const Icon(
+                            Icons.edit,
+                            color: Colors.blue,
+                          )),
+                      const SizedBox(
+                        width: 10,
+                      ),
+                      InkWell(
+                        onTap: () {
+                          showDialog(
+                            context: context,
+                            builder: (BuildContext context) {
+                              return AlertDialog(
+                                title: Text('Delete Confirmation'),
+                                content: Text(
+                                    'Are you sure you want to delete this category?'),
+                                actions: <Widget>[
+                                  TextButton(
+                                    child: Text('No'),
+                                    onPressed: () {
+                                      Navigator.of(context).pop();
+                                    },
+                                  ),
+                                  TextButton(
+                                    child: Text('Yes'),
+                                    onPressed: () {
+                                      context
+                                          .read<CategoryProvider>()
+                                          .deleteCategory(context,
+                                              dataResult[index].id ?? 0);
+                                      Navigator.of(context).pop();
+                                    },
+                                  ),
+                                ],
                               );
                             },
-                            child: const Icon(
-                              Icons.delete,
-                              color: Colors.red,
-                            ),
-                          )
-                        ],
+                          );
+                        },
+                        child: const Icon(
+                          Icons.delete,
+                          color: Colors.red,
+                        ),
                       )
                     ],
-                  ),
-                ),
-              ],
+                  )
+                ],
+              ),
             ),
           ),
         );
@@ -162,7 +166,7 @@ class _CategoryPageState extends State<CategoryPage> {
           child: Text(context.watch<CategoryProvider>().messageError),
         );
       default:
-        return const CircularProgressIndicator();
+        return Center(child: const CircularProgressIndicator());
     }
   }
 }

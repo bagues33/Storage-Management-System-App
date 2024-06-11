@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:storage_management_app/controllers/category_provider.dart';
+import 'package:storage_management_app/controllers/profile_provider.dart';
 import 'package:storage_management_app/controllers/register_provider.dart';
 import 'package:storage_management_app/utils/push_notification_service.dart';
 import 'package:storage_management_app/views/splash_screen.dart';
@@ -53,8 +54,12 @@ class MyApp extends StatelessWidget {
         ChangeNotifierProvider(
           create: (context) => CategoryProvider(),
         ),
+        ChangeNotifierProvider(
+          create: (context) => ProfileProvider(),
+        ),
       ],
       child: MaterialApp(
+          theme: ThemeData(fontFamily: 'FontLato'),
           debugShowCheckedModeBanner: false,
           home: SplashScreen(),
            routes: {

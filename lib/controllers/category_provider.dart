@@ -17,6 +17,7 @@ class CategoryProvider extends ChangeNotifier {
 
   Future getCategory() async {
     try {
+      state = CategoryState.loading;
       var response =
           await Dio().get('http://192.168.100.178:3000/api/categories');
       var result = CategoryModel.fromJson(response.data);
@@ -49,24 +50,7 @@ class CategoryProvider extends ChangeNotifier {
       );
       messageError = '';
       nameController.clear();
-      showDialog(
-        context: context,
-        builder: (BuildContext context) {
-          return AlertDialog(
-            title: Text('Success'),
-            content: Text('Category has been added successfully.'),
-            actions: <Widget>[
-              TextButton(
-                child: Text('OK'),
-                onPressed: () {
-                  Navigator.of(context).pop();
-                  Navigator.pop(context);
-                },
-              ),
-            ],
-          );
-        },
-      );
+      showAlertDialogWithBack(context, 'Success', 'Category has been added successfully.');
       getCategory();
     } on DioException catch (e) {
       var error = e.response!.data[0]['msg'];
@@ -84,6 +68,7 @@ class CategoryProvider extends ChangeNotifier {
       var response =
           await Dio().get('http://192.168.100.178:3000/api/categories/$id');
       var result = CategoryResponseModel.fromJson(response.data);
+      idDataSelected = id;
       nameController.text = result.name!;
       print('nameController: ${nameController.text}');
       state = CategoryState.success;
@@ -109,24 +94,7 @@ class CategoryProvider extends ChangeNotifier {
       // var result = CategoryResponseModel.fromJson(response.data);
       messageError = '';
       nameController.clear();
-      showDialog(
-        context: context,
-        builder: (BuildContext context) {
-          return AlertDialog(
-            title: Text('Success'),
-            content: Text('Category has been updated successfully.'),
-            actions: <Widget>[
-              TextButton(
-                child: Text('OK'),
-                onPressed: () {
-                  Navigator.of(context).pop();
-                  Navigator.pop(context);
-                },
-              ),
-            ],
-          );
-        },
-      );
+      showAlertDialogWithBack(context, 'Success', 'Category has been updated successfully.');
       getCategory();
     } on DioException catch (e) {
       var error = e.response!.data[0]['msg'];
@@ -159,6 +127,27 @@ class CategoryProvider extends ChangeNotifier {
             TextButton(
               child: Text('OK'),
               onPressed: () {
+                Navigator.of(context).pop();
+              },
+            ),
+          ],
+        );
+      },
+    );
+  }
+
+  showAlertDialogWithBack(BuildContext context, String title, String content) {
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: Text(title),
+          content: Text(content),
+          actions: <Widget>[
+            TextButton(
+              child: Text('OK'),
+              onPressed: () {
+                Navigator.of(context).pop();
                 Navigator.of(context).pop();
               },
             ),

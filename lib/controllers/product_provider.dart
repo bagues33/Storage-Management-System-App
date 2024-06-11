@@ -23,15 +23,17 @@ class ProductProvider extends ChangeNotifier {
 
   int idDataSelected = 0;
 
-  Future<String> getUserId() async {
+  Future<int> getUserId() async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
-    String? userId = prefs.getString('userId');
-    return userId ?? '';
+    int? userId = prefs.getInt('userId');
+    return userId ?? 0;
   }
 
   Future getProduct() async {
     try {
-      var response = await Dio().get('http://192.168.100.178:3000/api/products');
+      state = ProductState.loading;
+      var response =
+          await Dio().get('http://192.168.100.178:3000/api/products');
       var result = ProductModel.fromJson(response.data);
       print('result: $result');
       if (result.data!.isEmpty) {
@@ -52,7 +54,7 @@ class ProductProvider extends ChangeNotifier {
   ) async {
     try {
       state = ProductState.loading;
-      String userId = await getUserId();
+      int userId = await getUserId();
       var requestModel = {
         "name": nameController.text,
         "qty": qtyController.text,
@@ -61,31 +63,22 @@ class ProductProvider extends ChangeNotifier {
         "updated_by": userId,
         "category_id": categoryIdController.text,
       };
-      await Dio().post(
-        'http://192.168.100.178:3000/api/products',
-        data: requestModel,
-      );
-      showDialog(
-        context: context,
-        builder: (context) {
-          return AlertDialog(
-            title: Text('Success'),
-            content: Text('Data berhasil ditambahkan'),
-            actions: [
-              TextButton(
-                onPressed: () {
-                  Navigator.pop(context);
-                  Navigator.pop(context);
-                },
-                child: Text('OK'),
-              )
-            ],
-          );
-        },
-      );
+      print('requestModel products: $requestModel');
+      await Dio()
+          .post('http://192.168.100.178:3000/api/products', data: requestModel);
+      messageError = '';
+      nameController.clear();
+      qtyController.clear();
+      imageController.clear();
+      categoryIdController.clear();
+      showAlertDialogWithBack(
+          context, 'Success', 'Product has been added successfully.');
       getProduct();
-    } catch (e) {
-      messageError = e.toString();
+    } on DioException catch (e) {
+      var error = e.response!.data[0]['msg'];
+      showAlertDialog(context, 'Error', error);
+      // var error = e.toString();
+      print('error insert product: $error');
     }
     notifyListeners();
   }
@@ -93,16 +86,16 @@ class ProductProvider extends ChangeNotifier {
   Future detailProduct(int id) async {
     try {
       messageError = '';
-      var response = await Dio().get('http://192.168.100.178:3000/api/products/$id');
+      var response =
+          await Dio().get('http://192.168.100.178:3000/api/products/$id');
       var result = ProductResponseModel.fromJson(response.data);
+      print('result detail product: $result');
       idDataSelected = id;
-      nameController.text = result.data!.name ?? '-';
-      qtyController.text = result.data!.qty.toString();
-      imageController.text = result.data!.imageUrl ?? '-';
-      createdByController.text = result.data!.createdBy.toString();
-      updatedByController.text = result.data!.updatedBy.toString();
-      categoryIdController.text = result.data!.categoryId.toString();
-      
+      nameController.text = result.name!;
+      qtyController.text = result.qty!.toString();
+      imageController.text = result.imageUrl!;
+      categoryIdController.text = result.categoryId!.toString();
+      state = ProductState.success;
     } catch (e) {
       state = ProductState.error;
       messageError = e.toString();
@@ -116,7 +109,7 @@ class ProductProvider extends ChangeNotifier {
     try {
       state = ProductState.loading;
       var id = idDataSelected;
-      String userId = await getUserId();
+      int userId = await getUserId();
       var requestModel = {
         "name": nameController.text,
         "qty": qtyController.text,
@@ -124,12 +117,21 @@ class ProductProvider extends ChangeNotifier {
         "updated_by": userId,
         "category_id": categoryIdController.text,
       };
-      await Dio().put('http://192.168.100.178:3000/api/products/$id', data: requestModel);
+      await Dio().put('http://192.168.100.178:3000/api/products/$id',
+          data: requestModel);
       // var result = ProductResponseModel.fromJson(response.data);
-      Navigator.pop(context);
+      messageError = '';
+      nameController.clear();
+      qtyController.clear();
+      imageController.clear();
+      categoryIdController.clear();
+      showAlertDialogWithBack(
+          context, 'Success', 'Product has been updated successfully.');
       getProduct();
-    } catch (e) {
-      messageError = e.toString();
+    } on DioException catch (e) {
+      var error = e.response!.data[0]['msg'];
+      showAlertDialog(context, 'Error', error);
+      print('error update product: $error');
     }
     notifyListeners();
   }
@@ -143,6 +145,48 @@ class ProductProvider extends ChangeNotifier {
       messageError = e.toString();
     }
     notifyListeners();
+  }
+
+  void showAlertDialog(BuildContext context, String title, String message) {
+    showDialog(
+      context: context,
+      builder: (context) {
+        return AlertDialog(
+          title: Text(title),
+          content: Text(message),
+          actions: [
+            TextButton(
+              onPressed: () {
+                Navigator.pop(context);
+              },
+              child: Text('OK'),
+            ),
+          ],
+        );
+      },
+    );
+  }
+
+  void showAlertDialogWithBack(
+      BuildContext context, String title, String message) {
+    showDialog(
+      context: context,
+      builder: (context) {
+        return AlertDialog(
+          title: Text(title),
+          content: Text(message),
+          actions: [
+            TextButton(
+              onPressed: () {
+                Navigator.pop(context);
+                Navigator.pop(context);
+              },
+              child: Text('OK'),
+            ),
+          ],
+        );
+      },
+    );
   }
 }
 

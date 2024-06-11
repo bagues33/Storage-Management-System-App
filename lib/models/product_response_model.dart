@@ -1,22 +1,4 @@
 class ProductResponseModel {
-  DataResponse? data;
-
-  ProductResponseModel({this.data});
-
-  ProductResponseModel.fromJson(Map<String, dynamic> json) {
-    data = json['data'] != null ? DataResponse.fromJson(json['data']) : null;
-  }
-
-  Map<String, dynamic> toJson() {
-     final Map<String, dynamic> data = <String, dynamic>{};
-    if (this.data != null) {
-      data['data'] = this.data!.toJson();
-    }
-    return data;
-  }
-}
-
-class DataResponse {
   int? id;
   String? name;
   int? qty;
@@ -27,25 +9,24 @@ class DataResponse {
   String? createdAt;
   String? updatedAt;
   Category? category;
-  User? createdByUser;
-  User? updatedByUser;
+  CreatedBy? createdByUser;
+  CreatedBy? updatedByUser;
 
-  DataResponse({
-    this.id, 
-    this.name, 
-    this.qty, 
-    this.imageUrl, 
-    this.createdBy, 
-    this.updatedBy, 
-    this.categoryId, 
-    this.createdAt, 
-    this.updatedAt, 
-    this.category, 
-    this.createdByUser, 
-    this.updatedByUser
-  });
+  ProductResponseModel(
+      {this.id,
+      this.name,
+      this.qty,
+      this.imageUrl,
+      this.createdBy,
+      this.updatedBy,
+      this.categoryId,
+      this.createdAt,
+      this.updatedAt,
+      this.category,
+      this.createdByUser,
+      this.updatedByUser});
 
-  DataResponse.fromJson(Map<String, dynamic> json) {
+  ProductResponseModel.fromJson(Map<String, dynamic> json) {
     id = json['id'];
     name = json['name'];
     qty = json['qty'];
@@ -55,30 +36,36 @@ class DataResponse {
     categoryId = json['category_id'];
     createdAt = json['createdAt'];
     updatedAt = json['updatedAt'];
-    category = json['category'] != null ? Category.fromJson(json['category']) : null;
-    createdByUser = json['createdBy'] != null ? User.fromJson(json['createdBy']) : null;
-    updatedByUser = json['updatedBy'] != null ? User.fromJson(json['updatedBy']) : null;
+    category = json['category'] != null
+        ? new Category.fromJson(json['category'])
+        : null;
+    createdByUser = json['createdByUser'] != null
+        ? new CreatedBy.fromJson(json['createdByUser'])
+        : null;
+    updatedByUser = json['updatedByUser'] != null
+        ? new CreatedBy.fromJson(json['updatedByUser'])
+        : null;
   }
 
   Map<String, dynamic> toJson() {
-    final Map<String, dynamic> data = <String, dynamic>{};
-    data['id'] = id;
-    data['name'] = name;
-    data['qty'] = qty;
-    data['image_url'] = imageUrl;
-    data['created_by'] = createdBy;
-    data['updated_by'] = updatedBy;
-    data['category_id'] = categoryId;
-    data['createdAt'] = createdAt;
-    data['updatedAt'] = updatedAt;
+    final Map<String, dynamic> data = new Map<String, dynamic>();
+    data['id'] = this.id;
+    data['name'] = this.name;
+    data['qty'] = this.qty;
+    data['image_url'] = this.imageUrl;
+    data['created_by'] = this.createdBy;
+    data['updated_by'] = this.updatedBy;
+    data['category_id'] = this.categoryId;
+    data['createdAt'] = this.createdAt;
+    data['updatedAt'] = this.updatedAt;
     if (this.category != null) {
       data['category'] = this.category!.toJson();
     }
     if (this.createdByUser != null) {
-      data['createdBy'] = this.createdByUser!.toJson();
+      data['createdByUser'] = this.createdByUser!.toJson();
     }
-    if (this.updatedByUser != null) {
-      data['updatedBy'] = this.updatedByUser!.toJson();
+    if (this.createdByUser != null) {
+      data['createdByUser'] = this.createdByUser!.toJson();
     }
     return data;
   }
@@ -96,31 +83,31 @@ class Category {
   }
 
   Map<String, dynamic> toJson() {
-    final Map<String, dynamic> data = <String, dynamic>{};
-    data['id'] = id;
-    data['name'] = name;
+    final Map<String, dynamic> data = new Map<String, dynamic>();
+    data['id'] = this.id;
+    data['name'] = this.name;
     return data;
   }
 }
 
-class User {
+class CreatedBy {
   int? id;
   String? username;
   String? image;
 
-  User({this.id, this.username, this.image});
+  CreatedBy({this.id, this.username, this.image});
 
-  User.fromJson(Map<String, dynamic> json) {
+  CreatedBy.fromJson(Map<String, dynamic> json) {
     id = json['id'];
     username = json['username'];
     image = json['image'];
   }
 
   Map<String, dynamic> toJson() {
-    final Map<String, dynamic> data = <String, dynamic>{};
-    data['id'] = id;
-    data['username'] = username;
-    data['image'] = image;
+    final Map<String, dynamic> data = new Map<String, dynamic>();
+    data['id'] = this.id;
+    data['username'] = this.username;
+    data['image'] = this.image;
     return data;
   }
 }

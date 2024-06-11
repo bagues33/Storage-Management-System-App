@@ -25,19 +25,25 @@ class _ProductPageState extends State<ProductPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: Color.fromRGBO(255, 247, 233, 1),
       appBar: AppBar(
-        backgroundColor: Colors.amber,
+        backgroundColor: Color.fromRGBO(255, 247, 233, 1),
+        titleTextStyle: const TextStyle(
+          color: Colors.black,
+          fontSize: 24,
+        ),
         // leading: IconButton(onPressed: () {}, icon: const Icon(Icons.home)),
         title: const Text('Product Page'),
         actions: [
           IconButton(
             icon: const Icon(Icons.person),
+            color: Colors.black,
             onPressed: () async {
-             Navigator.push(
-                context,
-              MaterialPageRoute(
-                builder: (context) => const ProfilePage(),
-              ));
+              Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => const ProfilePage(),
+                  ));
               // SharedPreferences prefs = await SharedPreferences.getInstance();
               // await prefs.remove('token');
               // await prefs.remove('userId');
@@ -51,30 +57,30 @@ class _ProductPageState extends State<ProductPage> {
         ],
       ),
       floatingActionButton: FloatingActionButton(
-          onPressed: () {
-            Navigator.push(
-                context,
-                MaterialPageRoute(
-                  builder: (context) => const FormProductPage(),
-                ));
-          },
-          child: const Icon(Icons.add),
-        ),
-        body: Container(
-          padding: const EdgeInsets.all(10),
-          child: Column(
-            children: [
-              Expanded(
-                child: Consumer<ProductProvider>(
-                  builder: (context, value, child) {
-                    return bodyData(context, value.state);
-                  },
-                ),
+        onPressed: () {
+          Navigator.push(
+              context,
+              MaterialPageRoute(
+                builder: (context) => const FormProductPage(),
+              ));
+        },
+        child: const Icon(Icons.add),
+      ),
+      body: Container(
+        padding: const EdgeInsets.all(10),
+        child: Column(
+          children: [
+            Expanded(
+              child: Consumer<ProductProvider>(
+                builder: (context, value, child) {
+                  return bodyData(context, value.state);
+                },
               ),
-            ],
-          ),
+            ),
+          ],
         ),
-      );
+      ),
+    );
   }
 
   Widget bodyData(BuildContext context, ProductState state) {
@@ -89,60 +95,92 @@ class _ProductPageState extends State<ProductPage> {
             shape: const RoundedRectangleBorder(
                 borderRadius: BorderRadius.all(Radius.circular(20)),
                 side: BorderSide(color: Colors.black)),
-            child: Row(
-              mainAxisSize: MainAxisSize.max,
-              children: [
-                Expanded(
-                  child: Image.network(
-                    dataResult[index].image_url ?? '',
-                    fit: BoxFit.cover,
-                    errorBuilder: (BuildContext context, Object exception, StackTrace? stackTrace) {
-                      // You can return an Image.asset here
-                      return Image.asset('lib/assets/images/default_image.png',
-                          fit: BoxFit.cover, width: 100, height: 100
-                      );
-                    },
-                  ),
-                ),
-                Expanded(
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text(
-                        dataResult[index].name ?? '',
-                        style: const TextStyle(
-                            fontWeight: FontWeight.bold, fontSize: 20),
+            child: Padding(
+              padding: const EdgeInsets.all(8.0),
+              child: Row(
+                children: [
+                  Expanded(
+                    child: ClipRRect(
+                      borderRadius: BorderRadius.circular(20),
+                      child: Image.network(
+                        dataResult[index].image_url ?? '',
+                        fit: BoxFit.cover,
+                        errorBuilder: (BuildContext context, Object exception,
+                            StackTrace? stackTrace) {
+                          // You can return an Image.asset here
+                          return Image.asset(
+                              'lib/assets/images/default_image.png',
+                              fit: BoxFit.cover,
+                             );
+                        },
                       ),
-                      Text(dataResult[index].qty.toString() ?? '0'),
-                      
-                      Text(dataResult[index].category!.name ?? ''),
-                      Text(dataResult[index].createdBy!.username ?? ''),
-                      Text(dataResult[index].updatedBy!.username ?? ''),
-                      Row(
-                        children: [
-                          InkWell(
-                              onTap: () => Navigator.push(
-                                  context,
-                                  MaterialPageRoute(
-                                    builder: (context) => EditFormProduct(
-                                      id: dataResult[index].id ?? 0,
-                                    ),
-                                  )),
-                              child: const Icon(
-                                Icons.edit,
-                                color: Colors.blue,
-                              )),
-                          const SizedBox(
-                            width: 10,
-                          ),
-                          InkWell(
+                    ),
+                  ),
+                  const SizedBox(
+                    width: 10,
+                  ),
+                  Expanded(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          dataResult[index].name ?? '',
+                          style: const TextStyle(
+                              fontFamily: 'FontLato',
+                              fontWeight: FontWeight.bold,
+                              fontSize: 20,
+
+                            ),
+                        ),
+                        Row(
+                          children: [
+                            Image.asset('lib/assets/images/quantity.png', width: 15, height: 15,),
+                            const SizedBox(
+                              width: 5,
+                            ),
+                            Text(dataResult[index].qty.toString()),
+                          ],
+                        ),
+                        Row(
+                          children: [
+                            Image.asset('lib/assets/images/category.png', width: 15, height: 15,),
+                            const SizedBox(
+                              width: 5,
+                            ),
+                            Text(dataResult[index].category!.name ?? ''),
+                          ],
+                        ),
+                        Text('Created by: ${dataResult[index].createdBy!.username ?? ''}'),
+                        Text('Updated by: ${dataResult[index].updatedBy!.username ?? ''}'),
+                        const SizedBox(
+                          height: 10,
+                        ),
+                        Row(
+                          children: [
+                            InkWell(
+                                onTap: () => Navigator.push(
+                                    context,
+                                    MaterialPageRoute(
+                                      builder: (context) => EditFormProduct(
+                                        id: dataResult[index].id ?? 0,
+                                      ),
+                                    )),
+                                child: const Icon(
+                                  Icons.edit,
+                                  color: Colors.blue,
+                                )),
+                            const SizedBox(
+                              width: 10,
+                            ),
+                            InkWell(
                               onTap: () {
                                 showDialog(
                                   context: context,
                                   builder: (BuildContext context) {
                                     return AlertDialog(
                                       title: Text('Confirm Delete'),
-                                      content: Text('Are you sure you want to delete this product?'),
+                                      content: Text(
+                                          'Are you sure you want to delete this product?'),
                                       actions: <Widget>[
                                         TextButton(
                                           child: Text('Cancel'),
@@ -155,7 +193,8 @@ class _ProductPageState extends State<ProductPage> {
                                           onPressed: () {
                                             context
                                                 .read<ProductProvider>()
-                                                .deleteProduct(context, dataResult[index].id ?? 0);
+                                                .deleteProduct(context,
+                                                    dataResult[index].id ?? 0);
                                             Navigator.of(context).pop();
                                           },
                                         ),
@@ -168,13 +207,14 @@ class _ProductPageState extends State<ProductPage> {
                                 Icons.delete,
                                 color: Colors.red,
                               ),
-                          )
-                        ],
-                      )
-                    ],
+                            )
+                          ],
+                        )
+                      ],
+                    ),
                   ),
-                ),
-              ],
+                ],
+              ),
             ),
           ),
         );
@@ -187,8 +227,7 @@ class _ProductPageState extends State<ProductPage> {
           child: Text(context.watch<ProductProvider>().messageError),
         );
       default:
-        return const CircularProgressIndicator();
+        return Center(child: const CircularProgressIndicator());
     }
   }
-  
 }
