@@ -6,6 +6,7 @@ import 'package:dio/dio.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:http/http.dart' as http;
+import 'package:storage_management_app/models/profile_response_model.dart';
 
 class ProfileProvider extends ChangeNotifier {
   final formKey = GlobalKey<FormState>();
@@ -13,9 +14,10 @@ class ProfileProvider extends ChangeNotifier {
   TextEditingController passwordController = TextEditingController();
   TextEditingController imageController = TextEditingController();
 
-  var profileState = StateProfile.initial;
+  var state = ProfileState.initial;
   File? imageFile;
-  String? imageUrl = 'http://localhost:3000/uploads/users/';
+  String? publicUrl = 'http://192.168.100.178:3000/uploads/users/';
+  String? imageUrl;
   String? image;
 
   // get user data from shared preferences
@@ -25,31 +27,42 @@ class ProfileProvider extends ChangeNotifier {
     return userId;
   }
 
-  Future getUser() async {
+  Future getUser(BuildContext context) async {
     try {
-      profileState = StateProfile.loading;
+      state = ProfileState.loading;
       var url = Uri.parse(
           'http://192.168.100.178:3000/api/auth/get-user/${await getIdUser()}');
       var response = await http.get(url);
       var data = jsonDecode(response.body);
-      usernameController.text = data['username'];
-      image = imageUrl! + data['image'];
-      profileState = StateProfile.success;
-    } catch (e) {
-      profileState = StateProfile.error;
+
+      ProfileResponseModel profile = ProfileResponseModel.fromJson(data);
+
+      usernameController.text = profile.username ?? '';
+      image = profile.image;
+      imageUrl = publicUrl.toString() + profile.image!;
+      print('image URL: $imageUrl');
+      print('image: $image');
+      state = ProfileState.success;
+    } on DioException catch (e) {
+      showAlertError(context, e as String);
+      state = ProfileState.error;
     }
     notifyListeners();
   }
 
-  Future updateProfile() async {
+  Future updateProfile(BuildContext context) async {
     try {
-      profileState = StateProfile.loading;
+      state = ProfileState.loading;
+      var idUser = await getIdUser();
       var url =
           Uri.parse('http://192.168.100.178:3000/api/auth/update-profile');
-      var request = http.MultipartRequest('POST', url);
+      var request = http.MultipartRequest('PUT', url);
       request.fields['username'] = usernameController.text;
-      request.fields['password'] = passwordController.text;
-      request.fields['id'] = await getIdUser().toString();
+      request.fields['id'] = idUser.toString();
+
+      if (passwordController.text.isNotEmpty) {
+        request.fields['password'] = passwordController.text;
+      }
 
       if (imageFile != null) {
         request.files
@@ -59,11 +72,14 @@ class ProfileProvider extends ChangeNotifier {
       var response = await request.send();
       var responseData = await response.stream.toBytes();
       var responseString = String.fromCharCodes(responseData);
-      var data = jsonDecode(responseString);
-
-      profileState = StateProfile.success;
-    } catch (e) {
-      profileState = StateProfile.error;
+      // var data = jsonDecode(responseString);
+      print("ID User: $idUser");
+      print("responseString Update Profile: $responseString");
+      showAlertSuccess(context);
+      state = ProfileState.success;
+    } on DioException catch (e)  {
+      showAlertError(context, e as String);
+      state = ProfileState.error;
     }
     notifyListeners();
   }
@@ -107,7 +123,7 @@ showAlertSuccess(BuildContext context) {
   );
 }
 
-showAlertError(BuildContext context, String message) {
+void showAlertError(BuildContext context, String message) {
   showDialog(
     context: context,
     builder: (context) {
@@ -127,6 +143,4 @@ showAlertError(BuildContext context, String message) {
   );
 }
 
-
-
-enum StateProfile { initial, loading, success, error }
+enum ProfileState { initial, loading, success, error }

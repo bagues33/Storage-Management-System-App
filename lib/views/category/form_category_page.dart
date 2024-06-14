@@ -22,43 +22,48 @@ class _FormCategoryPageState extends State<FormCategoryPage> {
   Widget build(BuildContext context) {
     var categoryProvider = context.watch<CategoryProvider>();
     return Scaffold(
+      backgroundColor: Color.fromRGBO(255, 247, 233, 1),
       appBar: AppBar(
+        backgroundColor: Color.fromRGBO(255, 247, 233, 1),
         title: const Text('Insert Category'),
       ),
-      body: Form(
-        key: categoryProvider.formKey,
-        child: ListView(
-          children: [
-            const Text(
-              'Name',
-              style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
-            ),
-            TextFormField(
-                controller: categoryProvider.nameController,
-                validator: (value) {
-                  if (value!.isEmpty) {
-                    return 'Tolong isi field ini';
-                  }
-                  return null;
+      body: Padding(
+        padding: const EdgeInsets.all(20.0),
+        child: Form(
+          key: categoryProvider.formKey,
+          child: ListView(
+            children: [
+              const Text(
+                'Name',
+                style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+              ),
+              TextFormField(
+                  controller: categoryProvider.nameController,
+                  validator: (value) {
+                    if (value!.isEmpty) {
+                      return 'Tolong isi field ini';
+                    }
+                    return null;
+                  },
+                  decoration: const InputDecoration(
+                      border: OutlineInputBorder(
+                          borderRadius: BorderRadius.all(Radius.circular(10))))),
+              const SizedBox(
+                height: 20,
+              ),
+              Text(categoryProvider.messageError),
+              ElevatedButton(
+                style: ElevatedButton.styleFrom(
+                    backgroundColor: Color.fromRGBO(26, 33, 48, 1), elevation: 5),
+                onPressed: () {
+                  context.read<CategoryProvider>().insertCategory(context);
                 },
-                decoration: const InputDecoration(
-                    border: OutlineInputBorder(
-                        borderRadius: BorderRadius.all(Radius.circular(10))))),
-            const SizedBox(
-              height: 20,
-            ),
-            Text(categoryProvider.messageError),
-            ElevatedButton(
-              style: ElevatedButton.styleFrom(
-                  backgroundColor: Colors.blue, elevation: 5),
-              onPressed: () {
-                context.read<CategoryProvider>().insertCategory(context);
-              },
-              child: const Text("Submit",
-                  style: TextStyle(fontSize: 18, color: Colors.white)),
-            ),
-            // bodyMessage()
-          ],
+                child: const Text("Submit",
+                    style: TextStyle(fontSize: 18, color: Colors.white)),
+              ),
+              // bodyMessage()
+            ],
+          ),
         ),
       ),
     );

@@ -44,19 +44,12 @@ class _ProductPageState extends State<ProductPage> {
                   MaterialPageRoute(
                     builder: (context) => const ProfilePage(),
                   ));
-              // SharedPreferences prefs = await SharedPreferences.getInstance();
-              // await prefs.remove('token');
-              // await prefs.remove('userId');
-              // await prefs.remove('username');
-              // Navigator.pushReplacement(
-              //   context,
-              //   MaterialPageRoute(builder: (context) => LoginPage()),
-              // );
             },
           ),
         ],
       ),
       floatingActionButton: FloatingActionButton(
+        backgroundColor: Color.fromRGBO(128, 196, 233, 1),
         onPressed: () {
           Navigator.push(
               context,
@@ -64,7 +57,10 @@ class _ProductPageState extends State<ProductPage> {
                 builder: (context) => const FormProductPage(),
               ));
         },
-        child: const Icon(Icons.add),
+        child: const Icon(
+          Icons.add,
+          color: Colors.black,
+        ),
       ),
       body: Container(
         padding: const EdgeInsets.all(10),
@@ -109,9 +105,9 @@ class _ProductPageState extends State<ProductPage> {
                             StackTrace? stackTrace) {
                           // You can return an Image.asset here
                           return Image.asset(
-                              'lib/assets/images/default_image.png',
-                              fit: BoxFit.cover,
-                             );
+                            'lib/assets/images/default_image.png',
+                            fit: BoxFit.cover,
+                          );
                         },
                       ),
                     ),
@@ -126,15 +122,18 @@ class _ProductPageState extends State<ProductPage> {
                         Text(
                           dataResult[index].name ?? '',
                           style: const TextStyle(
-                              fontFamily: 'FontLato',
-                              fontWeight: FontWeight.bold,
-                              fontSize: 20,
-
-                            ),
+                            fontFamily: 'FontLato',
+                            fontWeight: FontWeight.bold,
+                            fontSize: 20,
+                          ),
                         ),
                         Row(
                           children: [
-                            Image.asset('lib/assets/images/quantity.png', width: 15, height: 15,),
+                            Image.asset(
+                              'lib/assets/images/quantity.png',
+                              width: 15,
+                              height: 15,
+                            ),
                             const SizedBox(
                               width: 5,
                             ),
@@ -143,15 +142,21 @@ class _ProductPageState extends State<ProductPage> {
                         ),
                         Row(
                           children: [
-                            Image.asset('lib/assets/images/category.png', width: 15, height: 15,),
+                            Image.asset(
+                              'lib/assets/images/category.png',
+                              width: 15,
+                              height: 15,
+                            ),
                             const SizedBox(
                               width: 5,
                             ),
                             Text(dataResult[index].category!.name ?? ''),
                           ],
                         ),
-                        Text('Created by: ${dataResult[index].createdBy!.username ?? ''}'),
-                        Text('Updated by: ${dataResult[index].updatedBy!.username ?? ''}'),
+                        Text(
+                            'Created by: ${dataResult[index].createdBy!.username ?? ''}'),
+                        Text(
+                            'Updated by: ${dataResult[index].updatedBy!.username ?? ''}'),
                         const SizedBox(
                           height: 10,
                         ),

@@ -22,14 +22,14 @@ class _CategoryPageState extends State<CategoryPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Color.fromRGBO(255,247,233,1),
+      backgroundColor: Color.fromRGBO(255, 247, 233, 1),
       appBar: AppBar(
         // leading: IconButton(onPressed: () {}, icon: const Icon(Icons.home)),
-        backgroundColor: Color.fromRGBO(255,247,233,1),
+        backgroundColor: Color.fromRGBO(255, 247, 233, 1),
         titleTextStyle: const TextStyle(
           color: Colors.black,
           fontSize: 24,
-          ),
+        ),
         title: const Text('Category Page'),
         actions: [
           IconButton(
@@ -45,6 +45,7 @@ class _CategoryPageState extends State<CategoryPage> {
         ],
       ),
       floatingActionButton: FloatingActionButton(
+        backgroundColor: Color.fromRGBO(128, 196, 233, 1),
         onPressed: () {
           Navigator.push(
               context,
@@ -52,7 +53,10 @@ class _CategoryPageState extends State<CategoryPage> {
                 builder: (context) => const FormCategoryPage(),
               ));
         },
-        child: const Icon(Icons.add),
+        child: const Icon(
+          Icons.add,
+          color: Colors.black,
+        ),
       ),
       body: Container(
         padding: const EdgeInsets.all(10),

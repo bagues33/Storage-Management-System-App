@@ -15,107 +15,162 @@ class _ProfilePageState extends State<ProfilePage> {
   @override
   void initState() {
     super.initState();
-    context.read<ProfileProvider>().getUser();
+    context.read<ProfileProvider>().getUser(context);
   }
+
   @override
   Widget build(BuildContext context) {
-    var profileProvider = context.watch<ProfileProvider>();
     return Scaffold(
-      appBar: AppBar(
-        title: const Text('Profile Page'),
-        backgroundColor: Colors.amber,
-      ),
-      body: Center(
-        child: Column(
-          children: [
-            const SizedBox(height: 20),
-            if (profileProvider.imageFile != null)
-              Image.file(
-                profileProvider.imageFile!,
-                width: 100,
-                height: 100,
-              ),
-            if (profileProvider.imageFile == null)
-              Image.network(
-                // get image url from profileProvider.image
-                profileProvider.image!,
-                width: 100,
-                height: 100,
-              ),
-            const SizedBox(height: 20),
-            ElevatedButton(
-              onPressed: () async {
-                await profileProvider.pickImage();
-              },
-              child: const Text('Upload Image'),
-            ),
-            const SizedBox(height: 20),
-            TextFormField(
-              controller: profileProvider.usernameController,
-              decoration: const InputDecoration(
-                labelText: 'Username',
-                border: OutlineInputBorder(),
-              ),
-            ),
-            const SizedBox(height: 20),
-            TextFormField(
-              controller: profileProvider.passwordController,
-              decoration: const InputDecoration(
-                labelText: 'Password',
-                border: OutlineInputBorder(),
-              ),
-            ),
-            const SizedBox(height: 20),
-            Row(
-              children: [
-                ElevatedButton(
-                  onPressed: () async {
-                    await profileProvider.updateProfile();
-                  },
-                  child: const Text('Update Profile'),
-                ),
-                ElevatedButton(
-                  onPressed: () async {
-                    showDialog(
-                      context: context,
-                      builder: (BuildContext context) {
-                        return AlertDialog(
-                          title: Text('Logout Confirmation'),
-                          content: Text('Are you sure you want to logout?'),
-                          actions: <Widget>[
-                            TextButton(
-                              child: Text('Cancel'),
-                              onPressed: () {
-                                Navigator.of(context).pop();
-                              },
-                            ),
-                            TextButton(
-                              child: Text('Yes'),
-                              onPressed: () async {
-                                SharedPreferences prefs =
-                                    await SharedPreferences.getInstance();
-                                await prefs.remove('token');
-                                await prefs.remove('userId');
-                                await prefs.remove('username');
-                                Navigator.pushReplacement(
-                                  context,
-                                  MaterialPageRoute(
-                                      builder: (context) => LoginPage()),
-                                );
-                              },
-                            ),
-                          ],
-                        );
-                      },
-                    );
-                  },
-                  child: const Text('Logout'),
-                ),
-              ],
-            ),
-          ],
+        backgroundColor: Color.fromRGBO(255, 247, 233, 1),
+        appBar: AppBar(
+          title: const Text('Profile Page'),
+          backgroundColor: Color.fromRGBO(255, 247, 233, 1),
         ),
-      ),
-    );
+        body: bodyData(context, context.watch<ProfileProvider>().state));
+  }
+
+  Widget _buildProfileImage() {
+    var profileProvider = context.watch<ProfileProvider>();
+    if (profileProvider.imageFile != null) {
+      return Image.file(
+        profileProvider.imageFile!,
+        width: 100,
+        height: 100,
+      );
+    } else if (profileProvider.imageFile == null &&
+        profileProvider.image != null &&
+        profileProvider.image != '') {
+      return Image.network(
+        profileProvider.imageUrl!,
+        width: 100,
+        height: 100,
+      );
+    } else {
+      return Image.asset(
+        'lib/assets/images/profile.png',
+        width: 100,
+        height: 100,
+      );
+    }
+  }
+
+  Widget bodyData(BuildContext context, ProfileState state) {
+    var profileProvider = context.watch<ProfileProvider>();
+    switch (state) {
+      case ProfileState.loading:
+        return const Center(
+          child: CircularProgressIndicator(),
+        );
+      case ProfileState.error:
+        return const Center(
+          child: Text('Error'),
+        );
+      case ProfileState.success:
+        return SingleChildScrollView(
+          child: Center(
+            child: Padding(
+              padding: const EdgeInsets.all(20.0),
+              child: Column(
+                children: [
+                  const SizedBox(height: 20),
+                  _buildProfileImage(),
+                  const SizedBox(height: 20),
+                  TextButton(
+                    onPressed: () async {
+                      await profileProvider.pickImage();
+                    },
+                    child: Image.asset(
+                      'lib/assets/images/photo.png',
+                      width: 50,
+                      height: 50,
+                    ),
+                  ),
+                  const SizedBox(height: 20),
+                  TextFormField(
+                    controller: profileProvider.usernameController,
+                    decoration: const InputDecoration(
+                      labelText: 'Username',
+                      border: OutlineInputBorder(),
+                    ),
+                  ),
+                  const SizedBox(height: 20),
+                  TextFormField(
+                    controller: profileProvider.passwordController,
+                    decoration: const InputDecoration(
+                      labelText: 'Password',
+                      border: OutlineInputBorder(),
+                    ),
+                  ),
+                  const SizedBox(height: 20),
+                  Row(
+                    children: [
+                      ElevatedButton(
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: Color.fromRGBO(26, 33, 48, 1),
+                        ),
+                        onPressed: () async {
+                          await profileProvider.updateProfile(context);
+                        },
+                        child: const Text('Update Profile', style: TextStyle(
+                          color: Colors.white
+                        )),
+                      ),
+                      const SizedBox(width: 20),
+                      ElevatedButton(
+                        style: ButtonStyle(
+                          backgroundColor:
+                              MaterialStateProperty.all(Colors.red),
+                        ),
+                        onPressed: () async {
+                          showDialog(
+                            context: context,
+                            builder: (BuildContext context) {
+                              return AlertDialog(
+                                title: Text('Logout Confirmation'),
+                                content:
+                                    Text('Are you sure you want to logout?'),
+                                actions: <Widget>[
+                                  TextButton(
+                                    child: Text('Cancel'),
+                                    onPressed: () {
+                                      Navigator.of(context).pop();
+                                    },
+                                  ),
+                                  TextButton(
+                                    child: Text('Yes'),
+                                    onPressed: () async {
+                                      SharedPreferences prefs =
+                                          await SharedPreferences.getInstance();
+                                      await prefs.remove('token');
+                                      await prefs.remove('userId');
+                                      await prefs.remove('username');
+                                      Navigator.pushReplacement(
+                                        context,
+                                        MaterialPageRoute(
+                                            builder: (context) => LoginPage()),
+                                      );
+                                    },
+                                  ),
+                                ],
+                              );
+                            },
+                          );
+                        },
+                        child: const Text('Logout', style: TextStyle(
+                          color: Colors.white
+                        ),),
+                      ),
+                    ],
+                  ),
+                ],
+              ),
+            ),
+          ),
+        );
+      default:
+        return const Center(
+          child: Text('No Data'),
+        );
+    }
   }
 }

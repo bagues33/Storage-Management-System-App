@@ -11,6 +11,7 @@ class LoginPage extends StatefulWidget {
 }
 
 class _LoginPageState extends State<LoginPage> {
+  // final GlobalKey<FormState> formKey = GlobalKey<FormState>();
 
   @override
   Widget build(BuildContext context) {
@@ -18,12 +19,7 @@ class _LoginPageState extends State<LoginPage> {
     var loginProvider = context.watch<LoginProvider>();
 
     return Scaffold(
-      appBar: AppBar(
-        backgroundColor: Colors.amber,
-        leading: IconButton(onPressed: () {}, icon: const Icon(Icons.home)),
-        title: const Text('Login Page'),
-        // actions: const [Icon(Icons.star), Icon(Icons.alarm)],
-      ),
+      backgroundColor: Color.fromRGBO(255, 247, 233, 1),
       body: Center(
         child: Padding(
           padding: const EdgeInsets.symmetric(horizontal: 30),
@@ -31,35 +27,24 @@ class _LoginPageState extends State<LoginPage> {
             key: loginProvider.formKey,
             child: ListView(
               children: [
+                const SizedBox(
+                  height: 20,
+                ),
                 Container(
-                  margin:
-                      const EdgeInsets.symmetric(vertical: 50, horizontal: 30),
-                  padding:
-                      const EdgeInsets.symmetric(vertical: 20, horizontal: 40),
-                  decoration: BoxDecoration(
-                      color: Colors.white,
-                      border: Border.all(color: Colors.blue),
-                      borderRadius:
-                          const BorderRadius.all(Radius.circular(20))),
-                  child: Row(
-                    children: [
-                      Image.network(
-                        'https://cdn-images-1.medium.com/v2/resize:fit:1200/1*5-aoK8IBmXve5whBQM90GA.png',
-                        fit: BoxFit.cover,
-                        height: sizeWidth / 6,
-                      ),
-                      const Expanded(
-                        child: Text(
-                          'Selamat Datang di Kampus Merdeka',
-                          textAlign: TextAlign.center,
-                          style: TextStyle(
-                              color: Colors.blue,
-                              fontSize: 18,
-                              fontWeight: FontWeight.bold),
-                        ),
-                      ),
-                    ],
-                  ),
+                  width: sizeWidth * 0.5,
+                  height: sizeWidth * 0.5,
+                  child: SvgPicture.asset('lib/assets/images/ilus_login.svg'),
+                ),
+                const SizedBox(
+                  height: 40,
+                ),
+                const Text(
+                  'Welcome Back !',
+                  textAlign: TextAlign.center,
+                  style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold ),
+                ),
+                const SizedBox(
+                  height: 40,
                 ),
                 const Text(
                   'Username',
@@ -109,7 +94,7 @@ class _LoginPageState extends State<LoginPage> {
                 ),
                 ElevatedButton(
                   style: ElevatedButton.styleFrom(
-                      backgroundColor: Colors.blue, elevation: 5),
+                      backgroundColor: Color.fromRGBO(26, 33, 48, 1), elevation: 5),
                   onPressed: () {
                     context.read<LoginProvider>().processLogin(context);
                   },
@@ -119,14 +104,28 @@ class _LoginPageState extends State<LoginPage> {
                 const SizedBox(
                   height: 10,
                 ),
-                ElevatedButton(
-                  style: ElevatedButton.styleFrom(
-                      backgroundColor: Colors.red, elevation: 5),
-                  onPressed: () {
-                    Navigator.pushNamed(context, '/register');
-                  },
-                  child: const Text("Register",
-                      style: TextStyle(fontSize: 18, color: Colors.white)),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    const Text(
+                      style: TextStyle(
+                        fontSize: 16,
+                        fontWeight: FontWeight.bold,
+                      ),
+                      "Don't have an account?"
+                    ),
+                    TextButton(
+                        onPressed: () {
+                          Navigator.pushNamed(context, '/register');
+                        },
+                        child: const Text(
+                          'Sign up',
+                          style: TextStyle(
+                              fontSize: 16,
+                              fontWeight: FontWeight.bold,
+                              color: Colors.blue),
+                        ))
+                  ],
                 ),
                 // bodyMessage()
               ],
