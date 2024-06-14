@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:storage_management_app/controllers/login_provider.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:provider/provider.dart';
+import 'package:storage_management_app/views/register_page.dart';
 
 class LoginPage extends StatefulWidget {
   const LoginPage({super.key});
@@ -11,7 +12,7 @@ class LoginPage extends StatefulWidget {
 }
 
 class _LoginPageState extends State<LoginPage> {
-  // final GlobalKey<FormState> formKey = GlobalKey<FormState>();
+  final GlobalKey<FormState> formKey = GlobalKey<FormState>();
 
   @override
   Widget build(BuildContext context) {
@@ -24,7 +25,7 @@ class _LoginPageState extends State<LoginPage> {
         child: Padding(
           padding: const EdgeInsets.symmetric(horizontal: 30),
           child: Form(
-            key: loginProvider.formKey,
+            key: formKey,
             child: ListView(
               children: [
                 const SizedBox(
@@ -41,7 +42,7 @@ class _LoginPageState extends State<LoginPage> {
                 const Text(
                   'Welcome Back !',
                   textAlign: TextAlign.center,
-                  style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold ),
+                  style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
                 ),
                 const SizedBox(
                   height: 40,
@@ -81,7 +82,9 @@ class _LoginPageState extends State<LoginPage> {
                     decoration: InputDecoration(
                         suffixIcon: IconButton(
                             onPressed: () {
-                              context.read<LoginProvider>().actionObscurePassword();
+                              context
+                                  .read<LoginProvider>()
+                                  .actionObscurePassword();
                             },
                             icon: Icon(loginProvider.obscurePassword == true
                                 ? Icons.visibility_off
@@ -94,12 +97,22 @@ class _LoginPageState extends State<LoginPage> {
                 ),
                 ElevatedButton(
                   style: ElevatedButton.styleFrom(
-                      backgroundColor: Color.fromRGBO(26, 33, 48, 1), elevation: 5),
-                  onPressed: () {
-                    context.read<LoginProvider>().processLogin(context);
-                  },
-                  child: const Text("Login",
-                          style: TextStyle(fontSize: 18, color: Colors.white)),
+                      backgroundColor: Color.fromRGBO(26, 33, 48, 1),
+                      elevation: 5),
+                  onPressed: loginProvider.state == LoginState.loading
+                      ? null
+                      : () {
+                          loginProvider.processLogin(context, formKey);
+                        },
+                  child: loginProvider.state == LoginState.loading
+                      ? CircularProgressIndicator(
+                          valueColor:
+                              AlwaysStoppedAnimation<Color>(Colors.white),
+                        )
+                      : const Text(
+                          'Login',
+                          style: TextStyle(fontSize: 18, color: Colors.white),
+                        ),
                 ),
                 const SizedBox(
                   height: 10,
@@ -108,15 +121,18 @@ class _LoginPageState extends State<LoginPage> {
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
                     const Text(
-                      style: TextStyle(
-                        fontSize: 16,
-                        fontWeight: FontWeight.bold,
-                      ),
-                      "Don't have an account?"
-                    ),
+                        style: TextStyle(
+                          fontSize: 16,
+                          fontWeight: FontWeight.bold,
+                        ),
+                        "Don't have an account?"),
                     TextButton(
                         onPressed: () {
-                          Navigator.pushNamed(context, '/register');
+                          // use navigator pushReplacement
+                          Navigator.pushReplacement(
+                              context,
+                              MaterialPageRoute(
+                                  builder: (context) => const RegisterPage()));
                         },
                         child: const Text(
                           'Sign up',

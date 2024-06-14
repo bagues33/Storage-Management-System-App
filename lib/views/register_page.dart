@@ -3,8 +3,10 @@ import 'package:flutter_svg/svg.dart';
 import 'package:provider/provider.dart';
 import 'package:storage_management_app/controllers/register_provider.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:storage_management_app/views/login_page.dart';
 
 class RegisterPage extends StatefulWidget {
+ 
   const RegisterPage({super.key});
 
   @override
@@ -12,6 +14,7 @@ class RegisterPage extends StatefulWidget {
 }
 
 class _RegisterPageState extends State<RegisterPage> {
+  final formKey = GlobalKey<FormState>();
   String? pathFiles;
   @override
   Widget build(BuildContext context) {
@@ -23,7 +26,7 @@ class _RegisterPageState extends State<RegisterPage> {
         child: Padding(
           padding: const EdgeInsets.symmetric(horizontal: 30),
           child: Form(
-            key: registerProvider.formKey,
+            key: formKey,
             child: ListView(
               children: [
                 const SizedBox(height: 40),
@@ -107,11 +110,20 @@ class _RegisterPageState extends State<RegisterPage> {
                   style: ElevatedButton.styleFrom(
                       backgroundColor: Color.fromRGBO(26, 33, 48, 1),
                       elevation: 5),
-                  onPressed: () {
-                    registerProvider.processRegister(context);
-                  },
-                  child: const Text('Register',
-                      style: TextStyle(fontSize: 18, color: Colors.white)),
+                  onPressed: registerProvider.state == RegisterState.loading
+                      ? null
+                      : () {
+                          registerProvider.processRegister(context, formKey);
+                        },
+                  child: registerProvider.state == RegisterState.loading
+                      ? CircularProgressIndicator(
+                          valueColor:
+                              AlwaysStoppedAnimation<Color>(Colors.white),
+                        )
+                      : const Text(
+                          'Register',
+                          style: TextStyle(fontSize: 18, color: Colors.white),
+                        ),
                 ),
                 const SizedBox(height: 20),
                 Row(
@@ -119,11 +131,17 @@ class _RegisterPageState extends State<RegisterPage> {
                   children: [
                     const Text(
                       'Sudah punya akun?',
-                      style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+                      style:
+                          TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
                     ),
                     TextButton(
                       onPressed: () {
-                        Navigator.pushNamed(context, '/login');
+                        // use naigator pushReplacement
+                        Navigator.pushReplacement(
+                            context,
+                            MaterialPageRoute(
+                              builder: (context) => const LoginPage(),
+                            ));
                       },
                       child: const Text(
                         'Login',

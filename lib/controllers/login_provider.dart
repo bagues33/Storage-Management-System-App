@@ -8,13 +8,14 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'package:storage_management_app/views/home_screen.dart';
 import 'package:storage_management_app/views/product/product_page.dart';
 
+enum LoginState { initial, success, error, loading }
+
 class LoginProvider extends ChangeNotifier {
   PushNotificationService pushNotificationService = PushNotificationService();
-  final formKey = GlobalKey<FormState>();
   TextEditingController usernameController = TextEditingController();
   TextEditingController passwordController = TextEditingController();
 
-  var loginState = StateLogin.initial;
+  LoginState state = LoginState.initial;
   var username = '';
   var messageError = '';
   bool obscurePassword = true;
@@ -40,10 +41,10 @@ class LoginProvider extends ChangeNotifier {
     }
   }
 
-  void processLogin(BuildContext context) async {
+  void processLogin(BuildContext context, GlobalKey<FormState> formKey) async {
     if (formKey.currentState!.validate()) {
       try {
-        loginState = StateLogin.initial;
+        state = LoginState.loading;
         var response =
             await loginAPI(usernameController.text, passwordController.text);
         if (response != null) {
@@ -66,7 +67,7 @@ class LoginProvider extends ChangeNotifier {
                 );
               },
             );
-            loginState = StateLogin.error;
+            state = LoginState.error;
           } else {
             LoginResponseModel loginResponse = LoginResponseModel.fromJson(response);
             var token = loginResponse.token;
@@ -78,20 +79,20 @@ class LoginProvider extends ChangeNotifier {
               await prefs.setString('token', token);
               await prefs.setInt('userId', id);
               await prefs.setString('username', username);
-
+              state = LoginState.success;
               pushNotificationService.showNotification(
                   'Success', 'Congratulation. You have successfully for login');
               Navigator.pushReplacement(context,
                   MaterialPageRoute(builder: (context) => HomeScreen()));
             } else {
-              loginState = StateLogin.error;
+              state = LoginState.error;
             }
           }
         } else {
-          loginState = StateLogin.error;
+          state = LoginState.error;
         }
       } catch (e) {
-        loginState = StateLogin.error;
+        state = LoginState.error;
       }
     } else {
       showAlertError(context);
@@ -103,8 +104,6 @@ class LoginProvider extends ChangeNotifier {
     notifyListeners();
   }
 }
-
-enum StateLogin { initial, success, error }
 
 showAlertError(BuildContext context) {
   showDialog(
