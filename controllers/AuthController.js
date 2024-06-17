@@ -42,7 +42,7 @@ const authentication = async (req, res) => {
             });
         }
     } catch (error) {
-        res.json({ msg: `username or password not match ${error}` }).status(422);
+        res.json({ msg: `username or password not match` }).status(422);
     }
 }
 
