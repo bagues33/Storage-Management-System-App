@@ -5,6 +5,7 @@ import 'package:storage_management_app/utils/push_notification_service.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:storage_management_app/views/components/alert_dialogs.dart';
 import 'package:storage_management_app/views/home_screen.dart';
 import 'package:storage_management_app/views/product/product_page.dart';
 
@@ -45,31 +46,16 @@ class LoginProvider extends ChangeNotifier {
     if (formKey.currentState!.validate()) {
       try {
         state = LoginState.loading;
+        notifyListeners();
         var response =
             await loginAPI(usernameController.text, passwordController.text);
         if (response != null) {
           if (response.containsKey('msg')) {
-            // Show the error message in an alert dialog
-            showDialog(
-              context: context,
-              builder: (BuildContext context) {
-                return AlertDialog(
-                  title: Text('Login Failed'),
-                  content: Text(response['msg']),
-                  actions: <Widget>[
-                    TextButton(
-                      child: Text('OK'),
-                      onPressed: () {
-                        Navigator.of(context).pop();
-                      },
-                    ),
-                  ],
-                );
-              },
-            );
+            showAlertError(context, 'Ohh Nooo!', response['msg']);
             state = LoginState.error;
           } else {
-            LoginResponseModel loginResponse = LoginResponseModel.fromJson(response);
+            LoginResponseModel loginResponse =
+                LoginResponseModel.fromJson(response);
             var token = loginResponse.token;
             var id = loginResponse.user?.id;
             var username = loginResponse.user?.username;
@@ -82,6 +68,8 @@ class LoginProvider extends ChangeNotifier {
               state = LoginState.success;
               pushNotificationService.showNotification(
                   'Success', 'Congratulation. You have successfully for login');
+              usernameController.clear();
+              passwordController.clear();
               Navigator.pushReplacement(context,
                   MaterialPageRoute(builder: (context) => HomeScreen()));
             } else {
@@ -95,7 +83,7 @@ class LoginProvider extends ChangeNotifier {
         state = LoginState.error;
       }
     } else {
-      showAlertError(context);
+      showAlertError(context, 'Ohh Nooo!', 'Please fill in the form correctly');
     }
   }
 
@@ -103,22 +91,6 @@ class LoginProvider extends ChangeNotifier {
     obscurePassword = !obscurePassword;
     notifyListeners();
   }
+  
 }
 
-showAlertError(BuildContext context) {
-  showDialog(
-    context: context,
-    builder: (context) {
-      return AlertDialog(
-        title: const Text('Periksa kelengkapan datamu!'),
-        actions: [
-          ElevatedButton(
-              onPressed: () {
-                Navigator.pop(context);
-              },
-              child: const Text('Ok'))
-        ],
-      );
-    },
-  );
-}

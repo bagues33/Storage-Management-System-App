@@ -7,6 +7,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'package:storage_management_app/models/product_model.dart';
 import 'package:dio/dio.dart';
 import 'package:storage_management_app/models/Product_response_model.dart';
+import 'package:storage_management_app/views/components/alert_dialogs.dart';
 
 class ProductProvider extends ChangeNotifier {
   final formKey = GlobalKey<FormState>();
@@ -30,8 +31,9 @@ class ProductProvider extends ChangeNotifier {
   }
 
   Future getProduct() async {
+    state = ProductState.loading;
+    notifyListeners();
     try {
-      state = ProductState.loading;
       var response =
           await Dio().get('http://192.168.100.178:3000/api/products');
       var result = ProductModel.fromJson(response.data);
@@ -42,6 +44,7 @@ class ProductProvider extends ChangeNotifier {
         state = ProductState.success;
         listProduct = result.data;
       }
+      state = ProductState.success;
     } catch (e) {
       state = ProductState.error;
       messageError = e.toString();
@@ -52,8 +55,9 @@ class ProductProvider extends ChangeNotifier {
   Future insertProduct(
     BuildContext context,
   ) async {
+    state = ProductState.loading;
+    notifyListeners();
     try {
-      state = ProductState.loading;
       int userId = await getUserId();
       var requestModel = {
         "name": nameController.text,
@@ -76,14 +80,15 @@ class ProductProvider extends ChangeNotifier {
       getProduct();
     } on DioException catch (e) {
       var error = e.response!.data[0]['msg'];
-      showAlertDialog(context, 'Error', error);
-      // var error = e.toString();
+      showAlertError(context, 'Ohh Nooo!', error);
+      getProduct();
       print('error insert product: $error');
     }
     notifyListeners();
   }
 
   Future detailProduct(int id) async {
+    state = ProductState.loading;
     try {
       messageError = '';
       var response =
@@ -126,11 +131,11 @@ class ProductProvider extends ChangeNotifier {
       imageController.clear();
       categoryIdController.clear();
       showAlertDialogWithBack(
-          context, 'Success', 'Product has been updated successfully.');
+          context, 'Great Work!', 'Product has been updated successfully.');
       getProduct();
     } on DioException catch (e) {
       var error = e.response!.data[0]['msg'];
-      showAlertDialog(context, 'Error', error);
+      showAlertError(context, 'Ohh Nooo!', error);
       print('error update product: $error');
     }
     notifyListeners();
@@ -147,47 +152,7 @@ class ProductProvider extends ChangeNotifier {
     notifyListeners();
   }
 
-  void showAlertDialog(BuildContext context, String title, String message) {
-    showDialog(
-      context: context,
-      builder: (context) {
-        return AlertDialog(
-          title: Text(title),
-          content: Text(message),
-          actions: [
-            TextButton(
-              onPressed: () {
-                Navigator.pop(context);
-              },
-              child: Text('OK'),
-            ),
-          ],
-        );
-      },
-    );
-  }
 
-  void showAlertDialogWithBack(
-      BuildContext context, String title, String message) {
-    showDialog(
-      context: context,
-      builder: (context) {
-        return AlertDialog(
-          title: Text(title),
-          content: Text(message),
-          actions: [
-            TextButton(
-              onPressed: () {
-                Navigator.pop(context);
-                Navigator.pop(context);
-              },
-              child: Text('OK'),
-            ),
-          ],
-        );
-      },
-    );
-  }
 }
 
 enum ProductState { initial, loading, success, error, nodata }

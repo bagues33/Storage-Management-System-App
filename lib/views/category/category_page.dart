@@ -23,27 +23,6 @@ class _CategoryPageState extends State<CategoryPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: Color.fromRGBO(255, 247, 233, 1),
-      appBar: AppBar(
-        // leading: IconButton(onPressed: () {}, icon: const Icon(Icons.home)),
-        backgroundColor: Color.fromRGBO(255, 247, 233, 1),
-        titleTextStyle: const TextStyle(
-          color: Colors.black,
-          fontSize: 24,
-        ),
-        title: const Text('Category Page'),
-        actions: [
-          IconButton(
-            icon: const Icon(Icons.person),
-            onPressed: () async {
-              Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                    builder: (context) => const ProfilePage(),
-                  ));
-            },
-          ),
-        ],
-      ),
       floatingActionButton: FloatingActionButton(
         backgroundColor: Color.fromRGBO(128, 196, 233, 1),
         onPressed: () {
@@ -52,6 +31,7 @@ class _CategoryPageState extends State<CategoryPage> {
               MaterialPageRoute(
                 builder: (context) => const FormCategoryPage(),
               ));
+              context.read<CategoryProvider>().getCategory();
         },
         child: const Icon(
           Icons.add,
@@ -124,18 +104,36 @@ class _CategoryPageState extends State<CategoryPage> {
                             context: context,
                             builder: (BuildContext context) {
                               return AlertDialog(
-                                title: Text('Delete Confirmation'),
+                                title: Text(
+                                  'Delete Confirmation',
+                                  style: TextStyle(
+                                    fontSize: 26,
+                                    fontWeight: FontWeight.bold,
+                                  ),
+                                ),
                                 content: Text(
-                                    'Are you sure you want to delete this category?'),
+                                  'Are you sure you want to delete this category?',
+                                  style: TextStyle(
+                                    fontSize: 16,
+                                  ),
+                                ),
                                 actions: <Widget>[
-                                  TextButton(
-                                    child: Text('No'),
+                                  ElevatedButton(
+                                    style: ElevatedButton.styleFrom(
+                                      backgroundColor:
+                                          Color.fromRGBO(26, 33, 48, 1),
+                                    ),
+                                    child: Text('No', style: TextStyle(color: Colors.white)),
                                     onPressed: () {
                                       Navigator.of(context).pop();
                                     },
                                   ),
-                                  TextButton(
-                                    child: Text('Yes'),
+                                  ElevatedButton(
+                                    style: ElevatedButton.styleFrom(
+                                      backgroundColor:
+                                          Colors.red,
+                                    ),
+                                    child: Text('Yes', style: TextStyle(color: Colors.white)),
                                     onPressed: () {
                                       context
                                           .read<CategoryProvider>()
@@ -163,7 +161,7 @@ class _CategoryPageState extends State<CategoryPage> {
         );
       case CategoryState.nodata:
         return const Center(
-          child: Text('No Data Product'),
+          child: Text('No Data Category'),
         );
       case CategoryState.error:
         return Center(

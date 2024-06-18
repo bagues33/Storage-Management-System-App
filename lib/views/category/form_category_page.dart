@@ -16,6 +16,7 @@ class _FormCategoryPageState extends State<FormCategoryPage> {
   void initState() {
     super.initState();
     context.read<CategoryProvider>().getCategory();
+    context.read<CategoryProvider>().nameController.clear();
   }
 
   @override
@@ -47,19 +48,31 @@ class _FormCategoryPageState extends State<FormCategoryPage> {
                   },
                   decoration: const InputDecoration(
                       border: OutlineInputBorder(
-                          borderRadius: BorderRadius.all(Radius.circular(10))))),
+                          borderRadius:
+                              BorderRadius.all(Radius.circular(10))))),
               const SizedBox(
                 height: 20,
               ),
-              Text(categoryProvider.messageError),
+              // Text(categoryProvider.messageError),
               ElevatedButton(
                 style: ElevatedButton.styleFrom(
-                    backgroundColor: Color.fromRGBO(26, 33, 48, 1), elevation: 5),
-                onPressed: () {
-                  context.read<CategoryProvider>().insertCategory(context);
-                },
-                child: const Text("Submit",
-                    style: TextStyle(fontSize: 18, color: Colors.white)),
+                    backgroundColor: Color.fromRGBO(26, 33, 48, 1),
+                    elevation: 5),
+                onPressed: categoryProvider.state == CategoryState.loading
+                    ? null
+                    : () {
+                        context
+                            .read<CategoryProvider>()
+                            .insertCategory(context);
+                      },
+                child: categoryProvider.state == CategoryState.loading
+                    ? CircularProgressIndicator(
+                        valueColor: AlwaysStoppedAnimation<Color>(Colors.white),
+                      )
+                    : const Text(
+                        'Submit',
+                        style: TextStyle(fontSize: 18, color: Colors.white),
+                      ),
               ),
               // bodyMessage()
             ],

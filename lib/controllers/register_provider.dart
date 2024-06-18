@@ -6,6 +6,7 @@ import 'package:http/http.dart' as http;
 import 'dart:convert';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:storage_management_app/views/components/alert_dialogs.dart';
 import 'package:storage_management_app/views/login_page.dart';
 
 enum RegisterState { initial, success, error, loading }
@@ -14,7 +15,7 @@ class RegisterProvider extends ChangeNotifier {
   PushNotificationService pushNotificationService = PushNotificationService();
   TextEditingController usernameController = TextEditingController();
   TextEditingController passwordController = TextEditingController();
-  
+
   RegisterState state = RegisterState.initial;
   var username = '';
   var messageError = '';
@@ -22,7 +23,6 @@ class RegisterProvider extends ChangeNotifier {
   File? imageFile;
 
   Future<String?> registerAPI(String username, String password) async {
-    state = RegisterState.loading;
     var url = Uri.parse(
         'http://192.168.100.178:3000/api/auth/register'); // Ganti dengan URL API lokal Anda
 
@@ -51,8 +51,12 @@ class RegisterProvider extends ChangeNotifier {
     }
   }
 
-  void processRegister(BuildContext context, GlobalKey<FormState> formKey) async {
+  void processRegister(
+      BuildContext context, GlobalKey<FormState> formKey) async {
     if (formKey.currentState!.validate()) {
+      state = RegisterState.loading; // Set state to loading here
+    notifyListeners(); // Notify listeners about the state change
+      print(state);
       String? error =
           await registerAPI(usernameController.text, passwordController.text);
       if (error == null) {
@@ -60,16 +64,19 @@ class RegisterProvider extends ChangeNotifier {
         state = RegisterState.success;
         pushNotificationService.showNotification(
             'Success', 'Congratulation. You have successfully for register');
-        showAlertSuccess(context);
+        usernameController.clear();
+        passwordController.clear();
+        showAlertSuccessLogin(
+            context, 'Great Work!', 'You have successfully registered');
+        print(state);
       } else {
         messageError = error;
         state = RegisterState.error;
-        showAlertError(context,
-            messageError); // Mengirimkan messageError sebagai parameter
+        showAlertError(context, 'Ohh Nooo!', messageError);
       }
     } else {
       state = RegisterState.error;
-      showAlertError(context, 'Username dan password tidak boleh kosong');
+      showAlertError(context, 'Ohh Nooo!', 'Please fill in the form correctly');
     }
 
     notifyListeners();
@@ -96,47 +103,4 @@ class RegisterProvider extends ChangeNotifier {
       }
     }
   }
-}
-
-void showAlertError(BuildContext context, String errorMessage) {
-  showDialog(
-    context: context,
-    builder: (context) {
-      return AlertDialog(
-        title: const Text('Error'),
-        content: Text(errorMessage), // Menampilkan pesan error dari server
-        actions: [
-          TextButton(
-            onPressed: () {
-              Navigator.pop(context);
-            },
-            child: const Text('OK'),
-          )
-        ],
-      );
-    },
-  );
-}
-
-void showAlertSuccess(BuildContext context) {
-  showDialog(
-    context: context,
-    builder: (context) {
-      return AlertDialog(
-        title: const Text('Success'),
-        content: const Text('Berhasil register'),
-        actions: [
-          TextButton(
-            onPressed: () {
-              Navigator.pushReplacement(
-                context,
-                MaterialPageRoute(builder: (context) => LoginPage()),
-              );
-            },
-            child: const Text('OK'),
-          )
-        ],
-      );
-    },
-  );
 }

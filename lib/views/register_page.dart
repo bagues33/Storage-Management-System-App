@@ -6,7 +6,6 @@ import 'package:image_picker/image_picker.dart';
 import 'package:storage_management_app/views/login_page.dart';
 
 class RegisterPage extends StatefulWidget {
- 
   const RegisterPage({super.key});
 
   @override
@@ -34,7 +33,7 @@ class _RegisterPageState extends State<RegisterPage> {
                   child: Text(
                     'Please Register and Upload Your Picture!',
                     textAlign: TextAlign.center,
-                    style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
+                    style: TextStyle(fontSize: 28, fontWeight: FontWeight.bold),
                   ),
                 ),
                 const SizedBox(height: 20),
@@ -70,7 +69,7 @@ class _RegisterPageState extends State<RegisterPage> {
                   controller: registerProvider.usernameController,
                   validator: (value) {
                     if (value!.isEmpty) {
-                      return 'Username tidak boleh kosong';
+                      return 'Username cannot be empty';
                     }
                     return null;
                   },
@@ -88,7 +87,7 @@ class _RegisterPageState extends State<RegisterPage> {
                     obscureText: registerProvider.obscurePassword,
                     validator: (value) {
                       if (value!.isEmpty) {
-                        return 'Tolong isi field ini';
+                        return 'Password cannot be empty';
                       }
                       return null;
                     },
@@ -106,25 +105,7 @@ class _RegisterPageState extends State<RegisterPage> {
                             borderRadius:
                                 BorderRadius.all(Radius.circular(10))))),
                 const SizedBox(height: 20),
-                ElevatedButton(
-                  style: ElevatedButton.styleFrom(
-                      backgroundColor: Color.fromRGBO(26, 33, 48, 1),
-                      elevation: 5),
-                  onPressed: registerProvider.state == RegisterState.loading
-                      ? null
-                      : () {
-                          registerProvider.processRegister(context, formKey);
-                        },
-                  child: registerProvider.state == RegisterState.loading
-                      ? CircularProgressIndicator(
-                          valueColor:
-                              AlwaysStoppedAnimation<Color>(Colors.white),
-                        )
-                      : const Text(
-                          'Register',
-                          style: TextStyle(fontSize: 18, color: Colors.white),
-                        ),
-                ),
+                buttonRegister(context, formKey, registerProvider.state),
                 const SizedBox(height: 20),
                 Row(
                   mainAxisAlignment: MainAxisAlignment.center,
@@ -168,5 +149,27 @@ class _RegisterPageState extends State<RegisterPage> {
       pathFiles = image!.path;
     });
     print(pathFiles);
+  }
+
+  Widget buttonRegister(
+      BuildContext context, GlobalKey<FormState> formKey, RegisterState state) {
+    switch (state) {
+      case RegisterState.loading:
+        return const Center(
+          child: CircularProgressIndicator(),
+        );
+      default:
+        return ElevatedButton(
+          style: ElevatedButton.styleFrom(
+              backgroundColor: Color.fromRGBO(26, 33, 48, 1), elevation: 5),
+          onPressed: () {
+            context.read<RegisterProvider>().processRegister(context, formKey);
+          },
+          child: const Text(
+            'Register',
+            style: TextStyle(fontSize: 18, color: Colors.white),
+          ),
+        );
+    }
   }
 }

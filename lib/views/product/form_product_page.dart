@@ -138,12 +138,21 @@ class _FormProductPageState extends State<FormProductPage> {
               ),
               ElevatedButton(
                 style: ElevatedButton.styleFrom(
-                    backgroundColor: Color.fromRGBO(26, 33, 48, 1), elevation: 5),
-                onPressed: () {
-                  context.read<ProductProvider>().insertProduct(context);
-                },
-                child: const Text("Submit",
-                    style: TextStyle(fontSize: 18, color: Colors.white)),
+                    backgroundColor: Color.fromRGBO(26, 33, 48, 1),
+                    elevation: 5),
+                onPressed: productProvider.state == ProductState.loading
+                    ? null
+                    : () {
+                        context.read<ProductProvider>().insertProduct(context);
+                      },
+                child: productProvider.state == ProductState.loading
+                    ? CircularProgressIndicator(
+                        valueColor: AlwaysStoppedAnimation<Color>(Colors.white),
+                      )
+                    : const Text(
+                        'Submit',
+                        style: TextStyle(fontSize: 18, color: Colors.white),
+                      ),
               ),
               // bodyMessage()
             ],

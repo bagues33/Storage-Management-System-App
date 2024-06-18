@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:storage_management_app/views/category/category_page.dart';
 import 'package:storage_management_app/views/product/product_page.dart';
+import 'package:storage_management_app/views/profile_page.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
@@ -17,6 +18,11 @@ class _HomeScreenState extends State<HomeScreen> {
     CategoryPage(),
   ];
 
+  static List<String> _appBarTitles = <String>[
+    'Product Page',
+    'Category Page',
+  ];
+
   void _onItemTapped(int index) {
     setState(() {
       _selectedIndex = index;
@@ -26,11 +32,33 @@ class _HomeScreenState extends State<HomeScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      appBar: AppBar(
+        automaticallyImplyLeading: false,
+        backgroundColor: Color.fromRGBO(255, 247, 233, 1),
+        titleTextStyle: const TextStyle(
+          color: Colors.black,
+          fontSize: 24,
+        ),
+        title: Text(_appBarTitles[_selectedIndex]), // Change this
+        actions: [
+          IconButton(
+            icon: const Icon(Icons.person),
+            onPressed: () async {
+              Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => const ProfilePage(),
+                  ));
+            },
+          ),
+        ],
+      ),
       body: Center(
         child: _widgetOptions.elementAt(_selectedIndex),
       ),
       bottomNavigationBar: Container(
-        clipBehavior: Clip.hardEdge, //or better look(and cost) using Clip.antiAlias,
+        clipBehavior:
+            Clip.hardEdge, //or better look(and cost) using Clip.antiAlias,
         decoration: BoxDecoration(
           borderRadius: BorderRadius.only(
             topRight: Radius.circular(24),

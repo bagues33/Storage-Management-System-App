@@ -21,42 +21,61 @@ class _EditFormCategoryState extends State<EditFormCategory> {
   Widget build(BuildContext context) {
     var categoryProvider = context.watch<CategoryProvider>();
     return Scaffold(
+       backgroundColor: Color.fromRGBO(255, 247, 233, 1),
       appBar: AppBar(
+         backgroundColor: Color.fromRGBO(255, 247, 233, 1),
         title: const Text('Edit Data Category'),
       ),
-      body: Form(
-        key: categoryProvider.formKey,
-        child: ListView(
-          children: [
-            const Text(
-              'Name',
-              style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
-            ),
-            TextFormField(
-                controller: categoryProvider.nameController,
-                validator: (value) {
-                  if (value!.isEmpty) {
-                    return 'Tolong isi field ini';
-                  }
-                  return null;
-                },
-                decoration: const InputDecoration(
-                    border: OutlineInputBorder(
-                        borderRadius: BorderRadius.all(Radius.circular(10))))),
-            const SizedBox(
-              height: 10,
-            ),
-            Text(categoryProvider.messageError),
-            const SizedBox(
-              height: 10,
-            ),
-            ElevatedButton(
-              onPressed: () {
-                context.read<CategoryProvider>().updateCategory(context);
-              },
-              child: const Text('Submit'),
-            ),
-          ],
+      body: Padding(
+        padding: const EdgeInsets.all(20.0),
+        child: Form(
+          key: categoryProvider.formKey,
+          child: ListView(
+            children: [
+              const Text(
+                'Name',
+                style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+              ),
+              TextFormField(
+                  controller: categoryProvider.nameController,
+                  validator: (value) {
+                    if (value!.isEmpty) {
+                      return 'Tolong isi field ini';
+                    }
+                    return null;
+                  },
+                  decoration: const InputDecoration(
+                      border: OutlineInputBorder(
+                          borderRadius: BorderRadius.all(Radius.circular(10))))),
+              const SizedBox(
+                height: 10,
+              ),
+              // Text(categoryProvider.messageError),
+              const SizedBox(
+                height: 10,
+              ),
+              ElevatedButton(
+                  style: ElevatedButton.styleFrom(
+                      backgroundColor: Color.fromRGBO(26, 33, 48, 1),
+                      elevation: 5),
+                  onPressed: categoryProvider.state == CategoryState.loading
+                      ? null
+                      : () {
+                          context
+                              .read<CategoryProvider>()
+                              .updateCategory(context);
+                        },
+                  child: categoryProvider.state == CategoryState.loading
+                      ? CircularProgressIndicator(
+                          valueColor: AlwaysStoppedAnimation<Color>(Colors.white),
+                        )
+                      : const Text(
+                          'Update',
+                          style: TextStyle(fontSize: 18, color: Colors.white),
+                        ),
+                ),
+            ],
+          ),
         ),
       ),
     );

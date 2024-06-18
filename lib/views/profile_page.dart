@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:storage_management_app/views/components/alert_dialogs.dart';
 import 'package:storage_management_app/views/login_page.dart';
 import 'package:provider/provider.dart';
 import 'package:storage_management_app/controllers/profile_provider.dart';
@@ -106,14 +107,26 @@ class _ProfilePageState extends State<ProfilePage> {
                     children: [
                       ElevatedButton(
                         style: ElevatedButton.styleFrom(
-                          backgroundColor: Color.fromRGBO(26, 33, 48, 1),
-                        ),
-                        onPressed: () async {
-                          await profileProvider.updateProfile(context);
-                        },
-                        child: const Text('Update Profile', style: TextStyle(
-                          color: Colors.white
-                        )),
+                            backgroundColor: Color.fromRGBO(26, 33, 48, 1),
+                            elevation: 5),
+                        onPressed:
+                            profileProvider.state == ProfileState.loading
+                                ? null
+                                : () {
+                                    context
+                                        .read<ProfileProvider>()
+                                        .updateProfile(context);
+                                  },
+                        child: profileProvider.state == ProfileState.loading
+                            ? CircularProgressIndicator(
+                                valueColor:
+                                    AlwaysStoppedAnimation<Color>(Colors.white),
+                              )
+                            : const Text(
+                                'Update Profile',
+                                style: TextStyle(
+                                    color: Colors.white),
+                              ),
                       ),
                       const SizedBox(width: 20),
                       ElevatedButton(
@@ -122,43 +135,13 @@ class _ProfilePageState extends State<ProfilePage> {
                               MaterialStateProperty.all(Colors.red),
                         ),
                         onPressed: () async {
-                          showDialog(
-                            context: context,
-                            builder: (BuildContext context) {
-                              return AlertDialog(
-                                title: Text('Logout Confirmation'),
-                                content:
-                                    Text('Are you sure you want to logout?'),
-                                actions: <Widget>[
-                                  TextButton(
-                                    child: Text('Cancel'),
-                                    onPressed: () {
-                                      Navigator.of(context).pop();
-                                    },
-                                  ),
-                                  TextButton(
-                                    child: Text('Yes'),
-                                    onPressed: () async {
-                                      SharedPreferences prefs =
-                                          await SharedPreferences.getInstance();
-                                      await prefs.remove('token');
-                                      await prefs.remove('userId');
-                                      await prefs.remove('username');
-                                      Navigator.pushReplacement(
-                                        context,
-                                        MaterialPageRoute(
-                                            builder: (context) => LoginPage()),
-                                      );
-                                    },
-                                  ),
-                                ],
-                              );
-                            },
-                          );
+                          showAlertDialogLogout(context, 'Logout',
+                              'Are you sure you want to logout?');
                         },
-                        child: const Text('Logout', style: TextStyle(
-                          color: Colors.white
-                        ),),
+                        child: const Text(
+                          'Logout',
+                          style: TextStyle(color: Colors.white),
+                        ),
                       ),
                     ],
                   ),

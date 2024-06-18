@@ -7,6 +7,7 @@ import 'package:image_picker/image_picker.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:http/http.dart' as http;
 import 'package:storage_management_app/models/profile_response_model.dart';
+import 'package:storage_management_app/views/components/alert_dialogs.dart';
 
 class ProfileProvider extends ChangeNotifier {
   final formKey = GlobalKey<FormState>();
@@ -28,38 +29,42 @@ class ProfileProvider extends ChangeNotifier {
   }
 
   Future getUser(BuildContext context) async {
+     state = ProfileState.loading;
     try {
-      state = ProfileState.loading;
       var url = Uri.parse(
           'http://192.168.100.178:3000/api/auth/get-user/${await getIdUser()}');
       var response = await http.get(url);
       var data = jsonDecode(response.body);
 
       ProfileResponseModel profile = ProfileResponseModel.fromJson(data);
-
+      print('Profile: $profile');
       usernameController.text = profile.username ?? '';
-      image = profile.image;
-      imageUrl = publicUrl.toString() + profile.image!;
+      
+      if (profile.image != null) {
+        image = profile.image;
+        imageUrl = publicUrl.toString() + profile.image!;
+      }
       print('image URL: $imageUrl');
       print('image: $image');
       state = ProfileState.success;
     } on DioException catch (e) {
-      showAlertError(context, e as String);
+      showAlertError(context, '', e as String);
       state = ProfileState.error;
     }
     notifyListeners();
   }
 
   Future updateProfile(BuildContext context) async {
+    state = ProfileState.loading;
+    notifyListeners();
     try {
-      state = ProfileState.loading;
       var idUser = await getIdUser();
       var url =
           Uri.parse('http://192.168.100.178:3000/api/auth/update-profile');
       var request = http.MultipartRequest('PUT', url);
       request.fields['username'] = usernameController.text;
       request.fields['id'] = idUser.toString();
-
+      
       if (passwordController.text.isNotEmpty) {
         request.fields['password'] = passwordController.text;
       }
@@ -75,10 +80,10 @@ class ProfileProvider extends ChangeNotifier {
       // var data = jsonDecode(responseString);
       print("ID User: $idUser");
       print("responseString Update Profile: $responseString");
-      showAlertSuccess(context);
+      showAlertSuccess(context,'Great Work!', 'Profile has been updated successfully.');
       state = ProfileState.success;
-    } on DioException catch (e)  {
-      showAlertError(context, e as String);
+    } on DioException catch (e) {
+      showAlertError(context, 'Ohh Nooo!', e as String);
       state = ProfileState.error;
     }
     notifyListeners();
@@ -102,45 +107,5 @@ class ProfileProvider extends ChangeNotifier {
   }
 }
 
-showAlertSuccess(BuildContext context) {
-  showDialog(
-    context: context,
-    builder: (context) {
-      return AlertDialog(
-        title: Text('Success'),
-        content:
-            Text('Congratulation. You have successfully for update profile'),
-        actions: [
-          TextButton(
-            onPressed: () {
-              Navigator.pop(context);
-            },
-            child: Text('OK'),
-          ),
-        ],
-      );
-    },
-  );
-}
-
-void showAlertError(BuildContext context, String message) {
-  showDialog(
-    context: context,
-    builder: (context) {
-      return AlertDialog(
-        title: Text('Error'),
-        content: Text(message),
-        actions: [
-          TextButton(
-            onPressed: () {
-              Navigator.pop(context);
-            },
-            child: Text('OK'),
-          ),
-        ],
-      );
-    },
-  );
-}
 
 enum ProfileState { initial, loading, success, error }

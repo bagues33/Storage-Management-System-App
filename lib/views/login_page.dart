@@ -42,7 +42,7 @@ class _LoginPageState extends State<LoginPage> {
                 const Text(
                   'Welcome Back !',
                   textAlign: TextAlign.center,
-                  style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
+                  style: TextStyle(fontSize: 28, fontWeight: FontWeight.bold),
                 ),
                 const SizedBox(
                   height: 40,
@@ -55,7 +55,7 @@ class _LoginPageState extends State<LoginPage> {
                     controller: loginProvider.usernameController,
                     validator: (value) {
                       if (value!.isEmpty) {
-                        return 'Tolong isi field ini';
+                        return 'Username cannot be empty';
                       }
                       return null;
                     },
@@ -75,7 +75,7 @@ class _LoginPageState extends State<LoginPage> {
                     obscureText: loginProvider.obscurePassword,
                     validator: (value) {
                       if (value!.isEmpty) {
-                        return 'Tolong isi field ini';
+                        return 'Password cannot be empty';
                       }
                       return null;
                     },

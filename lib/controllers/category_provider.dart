@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:storage_management_app/models/Category_model.dart';
 import 'package:dio/dio.dart';
 import 'package:storage_management_app/models/Category_response_model.dart';
+import 'package:storage_management_app/views/components/alert_dialogs.dart';
 
 class CategoryProvider extends ChangeNotifier {
   final formKey = GlobalKey<FormState>();
@@ -39,8 +40,9 @@ class CategoryProvider extends ChangeNotifier {
   Future insertCategory(
     BuildContext context,
   ) async {
+     state = CategoryState.loading;
+    notifyListeners();
     try {
-      state = CategoryState.loading;
       var requestModel = {
         "name": nameController.text,
       };
@@ -50,19 +52,19 @@ class CategoryProvider extends ChangeNotifier {
       );
       messageError = '';
       nameController.clear();
-      showAlertDialogWithBack(context, 'Success', 'Category has been added successfully.');
+      showAlertDialogWithBack(context, 'Great Work!', 'Category has been added successfully.');
       getCategory();
     } on DioException catch (e) {
       var error = e.response!.data[0]['msg'];
       print('error insert category: $error');
-      showAlertDialog(context, 'Error', error);
+      showAlertError(context, 'Ohh Nooo!', error);
     }
     notifyListeners();
   }
 
   Future detailCategory(int id) async {
+    state = CategoryState.loading;
     try {
-      state = CategoryState.loading;
       print('id Category: $id');
       messageError = '';
       var response =
@@ -83,8 +85,9 @@ class CategoryProvider extends ChangeNotifier {
   Future updateCategory(
     BuildContext context,
   ) async {
+    state = CategoryState.loading;
+    notifyListeners();
     try {
-      state = CategoryState.loading;
       var requestModel = {
         "name": nameController.text,
       };
@@ -94,12 +97,12 @@ class CategoryProvider extends ChangeNotifier {
       // var result = CategoryResponseModel.fromJson(response.data);
       messageError = '';
       nameController.clear();
-      showAlertDialogWithBack(context, 'Success', 'Category has been updated successfully.');
+      showAlertDialogWithBack(context, 'Great Work!', 'Category has been updated successfully.');
       getCategory();
     } on DioException catch (e) {
       var error = e.response!.data[0]['msg'];
       print('error update category: $error');
-      showAlertDialog(context, 'Error', error);
+      showAlertError(context, 'Ohh Nooo!', error);
     }
     notifyListeners();
   }
@@ -116,46 +119,7 @@ class CategoryProvider extends ChangeNotifier {
     notifyListeners();
   }
 
-  showAlertDialog(BuildContext context, String title, String content) {
-    showDialog(
-      context: context,
-      builder: (BuildContext context) {
-        return AlertDialog(
-          title: Text(title),
-          content: Text(content),
-          actions: <Widget>[
-            TextButton(
-              child: Text('OK'),
-              onPressed: () {
-                Navigator.of(context).pop();
-              },
-            ),
-          ],
-        );
-      },
-    );
-  }
-
-  showAlertDialogWithBack(BuildContext context, String title, String content) {
-    showDialog(
-      context: context,
-      builder: (BuildContext context) {
-        return AlertDialog(
-          title: Text(title),
-          content: Text(content),
-          actions: <Widget>[
-            TextButton(
-              child: Text('OK'),
-              onPressed: () {
-                Navigator.of(context).pop();
-                Navigator.of(context).pop();
-              },
-            ),
-          ],
-        );
-      },
-    );
-  }
+  
 }
 
 enum CategoryState { initial, loading, success, error, nodata }
