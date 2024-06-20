@@ -1,9 +1,9 @@
 const express = require('express')
-const auth = require('../controllers/AuthController')
+const AuthController = require('../controllers/AuthController')
 const { check, validationResult } = require('express-validator')
 const passwordHash = require('password-hash') 
 const router = express.Router()
-const uploadUser = require('../middlewares/upload-product')
+const uploadUser = require('../middlewares/upload-user')
 
 const checkValidation = [
     check('username').not().isEmpty().withMessage('required value').isAlphanumeric(),
@@ -32,21 +32,21 @@ const postParam = (req) => {
 
 router.post(`/register`, [uploadUser.single('image'), checkValidation], (req, res) =>  {
     const errors = validationResult(req);
-    (!errors.isEmpty() ? res.status(422).json(errors) : auth.register(postParam(req), res))
+    (!errors.isEmpty() ? res.status(422).json(errors) : AuthController.register(postParam(req), res))
 })
 router.post(`/login`, [checkValidationLogin], (req, res) => {
      const errors = validationResult(req);
-     (!errors.isEmpty() ? res.status(422).json(errors) : auth.authentication(req, res))
+     (!errors.isEmpty() ? res.status(422).json(errors) : AuthController.authentication(req, res))
 })
 
 // update user profile
 router.put(`/update-profile`, [uploadUser.single('image'), checkValidationUserUpdate], (req, res) => {
     const errors = validationResult(req);
-    (!errors.isEmpty() ? res.status(422).json(errors) : auth.updateProfile(req, res))
+    (!errors.isEmpty() ? res.status(422).json(errors) : AuthController.updateProfile(req, res))
 })
 
 // get user data by id
-router.get(`/get-user/:id`, (req, res) => auth.getUser(req, res))
+router.get(`/get-user/:id`, (req, res) => AuthController.getUser(req, res))
 
 
 module.exports = router
