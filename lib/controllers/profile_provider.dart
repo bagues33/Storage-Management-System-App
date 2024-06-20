@@ -1,6 +1,7 @@
 import 'dart:convert';
 import 'dart:io';
 
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:dio/dio.dart';
 import 'package:image_picker/image_picker.dart';
@@ -20,8 +21,8 @@ class ProfileProvider extends ChangeNotifier {
   String? publicUrl = 'http://192.168.100.178:3000/uploads/users/';
   String? imageUrl;
   String? image;
+  var obscurePassword = true;
 
-  // get user data from shared preferences
   Future<int?> getIdUser() async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
     int? userId = prefs.getInt('userId');
@@ -35,17 +36,15 @@ class ProfileProvider extends ChangeNotifier {
           'http://192.168.100.178:3000/api/auth/get-user/${await getIdUser()}');
       var response = await http.get(url);
       var data = jsonDecode(response.body);
-
+      print(response.body);
       ProfileResponseModel profile = ProfileResponseModel.fromJson(data);
-      print('Profile: $profile');
       usernameController.text = profile.username ?? '';
-      
+      var username = profile.username;
+      print(username);
       if (profile.image != null) {
         image = profile.image;
         imageUrl = publicUrl.toString() + profile.image!;
       }
-      print('image URL: $imageUrl');
-      print('image: $image');
       state = ProfileState.success;
     } on DioException catch (e) {
       showAlertError(context, '', e as String);
@@ -77,9 +76,7 @@ class ProfileProvider extends ChangeNotifier {
       var response = await request.send();
       var responseData = await response.stream.toBytes();
       var responseString = String.fromCharCodes(responseData);
-      // var data = jsonDecode(responseString);
-      print("ID User: $idUser");
-      print("responseString Update Profile: $responseString");
+      passwordController.clear();
       showAlertSuccess(context,'Great Work!', 'Profile has been updated successfully.');
       state = ProfileState.success;
     } on DioException catch (e) {
@@ -100,12 +97,29 @@ class ProfileProvider extends ChangeNotifier {
               ext.toLowerCase() == 'png')) {
         imageFile = File(image.path);
       } else {
-        // Tampilkan pesan error bahwa format gambar tidak didukung
+        print('File not supported');
       }
     }
-    notifyListeners(); // Add this line to notify listeners after picking an image
+    notifyListeners();
   }
-}
 
+  Future logout(BuildContext context) async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    await prefs.remove('token');
+    await prefs.remove('userId');
+    await prefs.remove('username');
+    imageController.clear();
+    usernameController.clear();
+    passwordController.clear();
+    imageFile = null;
+    Navigator.pushReplacementNamed(context, '/login');
+  }
+
+  void actionObscurePassword() {
+    obscurePassword = !obscurePassword;
+    notifyListeners();
+  }
+
+}
 
 enum ProfileState { initial, loading, success, error }

@@ -1,5 +1,3 @@
-// ignore_for_file: use_build_context_synchronously
-
 import 'dart:convert';
 
 import 'package:flutter/material.dart';
@@ -37,7 +35,6 @@ class ProductProvider extends ChangeNotifier {
       var response =
           await Dio().get('http://192.168.100.178:3000/api/products');
       var result = ProductModel.fromJson(response.data);
-      print('result: $result');
       if (result.data!.isEmpty) {
         state = ProductState.nodata;
       } else {
@@ -67,7 +64,6 @@ class ProductProvider extends ChangeNotifier {
         "updated_by": userId,
         "category_id": categoryIdController.text,
       };
-      print('requestModel products: $requestModel');
       await Dio()
           .post('http://192.168.100.178:3000/api/products', data: requestModel);
       messageError = '';
@@ -94,7 +90,6 @@ class ProductProvider extends ChangeNotifier {
       var response =
           await Dio().get('http://192.168.100.178:3000/api/products/$id');
       var result = ProductResponseModel.fromJson(response.data);
-      print('result detail product: $result');
       idDataSelected = id;
       nameController.text = result.name!;
       qtyController.text = result.qty!.toString();
@@ -124,7 +119,6 @@ class ProductProvider extends ChangeNotifier {
       };
       await Dio().put('http://192.168.100.178:3000/api/products/$id',
           data: requestModel);
-      // var result = ProductResponseModel.fromJson(response.data);
       messageError = '';
       nameController.clear();
       qtyController.clear();

@@ -97,7 +97,7 @@ class _EditFormProductState extends State<EditFormProduct> {
                         borderRadius: BorderRadius.all(Radius.circular(10)))),
                 value: productProvider.categoryIdController.text.isEmpty 
                       ? null 
-                      : int.parse(productProvider.categoryIdController.text), // set the selected value based on the id
+                      : int.parse(productProvider.categoryIdController.text),
                 items: categoryProvider!.map((e) {
                   return DropdownMenuItem(
                     value: e.id,
@@ -111,7 +111,6 @@ class _EditFormProductState extends State<EditFormProduct> {
               const SizedBox(
                 height: 10,
               ),
-              // Text(productProvider.messageError),
               const SizedBox(
                 height: 10,
               ),
@@ -135,7 +134,6 @@ class _EditFormProductState extends State<EditFormProduct> {
                           style: TextStyle(fontSize: 18, color: Colors.white),
                         ),
                 ),
-              // bodyMessage()
             ],
           ),
         ),

@@ -1,5 +1,3 @@
-// ignore_for_file: use_build_context_synchronously
-
 import 'package:flutter/material.dart';
 import 'package:storage_management_app/models/Category_model.dart';
 import 'package:dio/dio.dart';
@@ -28,7 +26,6 @@ class CategoryProvider extends ChangeNotifier {
       } else {
         state = CategoryState.success;
         listCategory = result.data;
-        print('listCategory: $listCategory');
       }
     } catch (e) {
       state = CategoryState.error;
@@ -56,7 +53,6 @@ class CategoryProvider extends ChangeNotifier {
       getCategory();
     } on DioException catch (e) {
       var error = e.response!.data[0]['msg'];
-      print('error insert category: $error');
       showAlertError(context, 'Ohh Nooo!', error);
     }
     notifyListeners();
@@ -65,17 +61,14 @@ class CategoryProvider extends ChangeNotifier {
   Future detailCategory(int id) async {
     state = CategoryState.loading;
     try {
-      print('id Category: $id');
       messageError = '';
       var response =
           await Dio().get('http://192.168.100.178:3000/api/categories/$id');
       var result = CategoryResponseModel.fromJson(response.data);
       idDataSelected = id;
       nameController.text = result.name!;
-      print('nameController: ${nameController.text}');
       state = CategoryState.success;
     } catch (e) {
-      print('error Detail Category: $e');
       state = CategoryState.error;
       messageError = e.toString();
     }
@@ -94,14 +87,12 @@ class CategoryProvider extends ChangeNotifier {
       await Dio().put(
           'http://192.168.100.178:3000/api/categories/$idDataSelected',
           data: requestModel);
-      // var result = CategoryResponseModel.fromJson(response.data);
       messageError = '';
       nameController.clear();
       showAlertDialogWithBack(context, 'Great Work!', 'Category has been updated successfully.');
       getCategory();
     } on DioException catch (e) {
       var error = e.response!.data[0]['msg'];
-      print('error update category: $error');
       showAlertError(context, 'Ohh Nooo!', error);
     }
     notifyListeners();
@@ -119,7 +110,6 @@ class CategoryProvider extends ChangeNotifier {
     notifyListeners();
   }
 
-  
 }
 
 enum CategoryState { initial, loading, success, error, nodata }

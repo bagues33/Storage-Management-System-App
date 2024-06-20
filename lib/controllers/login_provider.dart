@@ -1,7 +1,6 @@
 import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'package:storage_management_app/models/login_response_model.dart';
-import 'package:storage_management_app/utils/push_notification_service.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -12,7 +11,6 @@ import 'package:storage_management_app/views/product/product_page.dart';
 enum LoginState { initial, success, error, loading }
 
 class LoginProvider extends ChangeNotifier {
-  PushNotificationService pushNotificationService = PushNotificationService();
   TextEditingController usernameController = TextEditingController();
   TextEditingController passwordController = TextEditingController();
 
@@ -25,13 +23,13 @@ class LoginProvider extends ChangeNotifier {
       String username, String password) async {
     try {
       var url = Uri.parse(
-          'http://192.168.100.178:3000/api/auth/login'); // Ganti dengan URL API lokal Anda
+          'http://192.168.100.178:3000/api/auth/login');
       var response = await http
           .post(url, body: {'username': username, 'password': password});
 
       if (response.statusCode == 200) {
         var data = jsonDecode(response.body);
-        return data; // Mengembalikan data lengkap dari response API
+        return data; 
       } else {
         print('Error: ${response.statusCode}');
         return null;
@@ -53,6 +51,7 @@ class LoginProvider extends ChangeNotifier {
           if (response.containsKey('msg')) {
             showAlertError(context, 'Ohh Nooo!', response['msg']);
             state = LoginState.error;
+            notifyListeners();
           } else {
             LoginResponseModel loginResponse =
                 LoginResponseModel.fromJson(response);
@@ -66,8 +65,6 @@ class LoginProvider extends ChangeNotifier {
               await prefs.setInt('userId', id);
               await prefs.setString('username', username);
               state = LoginState.success;
-              pushNotificationService.showNotification(
-                  'Success', 'Congratulation. You have successfully for login');
               usernameController.clear();
               passwordController.clear();
               Navigator.pushReplacement(context,

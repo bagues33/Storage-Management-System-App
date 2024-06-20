@@ -91,7 +91,6 @@ class _FormProductPageState extends State<FormProductPage> {
               const SizedBox(
                 height: 10,
               ),
-              // list category
               const Text(
                 'Category ID',
                 style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
@@ -99,8 +98,7 @@ class _FormProductPageState extends State<FormProductPage> {
               DropdownButtonFormField<String>(
                 value: productProvider.categoryIdController.text.isEmpty
                     ? null
-                    : productProvider.categoryIdController
-                        .text, // set to null if the initial value is not in the dropdown items
+                    : productProvider.categoryIdController.text,
                 decoration: const InputDecoration(
                   border: OutlineInputBorder(
                     borderRadius: BorderRadius.all(Radius.circular(10)),
@@ -123,12 +121,6 @@ class _FormProductPageState extends State<FormProductPage> {
                           child: Text(e.name.toString()),
                         ))
                     .toList(),
-                // items: [
-                //   DropdownMenuItem<String>(
-                //     child: Text('Admin'),
-                //     value: 'one',
-                //   ),
-                // ],
               ),
               const SizedBox(
                 height: 10,
@@ -154,7 +146,6 @@ class _FormProductPageState extends State<FormProductPage> {
                         style: TextStyle(fontSize: 18, color: Colors.white),
                       ),
               ),
-              // bodyMessage()
             ],
           ),
         ),

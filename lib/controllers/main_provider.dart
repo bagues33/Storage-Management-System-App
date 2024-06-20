@@ -5,7 +5,6 @@ class MainProvider extends ChangeNotifier {
   
   void changeTabSelected(int value) {
     tabSelected = value;
-//? code dibawah utk trigger/update UI
     notifyListeners();
   }
 }

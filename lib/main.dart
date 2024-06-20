@@ -4,7 +4,6 @@ import 'package:firebase_core/firebase_core.dart';
 import 'package:storage_management_app/controllers/category_provider.dart';
 import 'package:storage_management_app/controllers/profile_provider.dart';
 import 'package:storage_management_app/controllers/register_provider.dart';
-import 'package:storage_management_app/utils/push_notification_service.dart';
 import 'package:storage_management_app/views/splash_screen.dart';
 
 import 'controllers/login_provider.dart';
@@ -16,7 +15,6 @@ import 'views/login_page.dart';
 import 'views/product/product_page.dart';
 import 'views/register_page.dart';
 
-
 void main() {
   initFirebase();
 }
@@ -26,7 +24,6 @@ Future initFirebase() async {
   await Firebase.initializeApp(
     options: DefaultFirebaseOptions.currentPlatform,
   );
-  await PushNotificationService().initializeAwesome();
 
   runApp(const MyApp());
 }

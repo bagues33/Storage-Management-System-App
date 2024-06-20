@@ -15,6 +15,16 @@ class _LoginPageState extends State<LoginPage> {
   final GlobalKey<FormState> formKey = GlobalKey<FormState>();
 
   @override
+  void initState() {
+    super.initState();
+    WidgetsBinding.instance?.addPostFrameCallback((_) {
+      var loginProvider = context.read<LoginProvider>();
+      loginProvider.usernameController.clear();
+      loginProvider.passwordController.clear();
+    });
+  }
+
+  @override
   Widget build(BuildContext context) {
     var sizeWidth = MediaQuery.sizeOf(context).width;
     var loginProvider = context.watch<LoginProvider>();
@@ -143,7 +153,6 @@ class _LoginPageState extends State<LoginPage> {
                         ))
                   ],
                 ),
-                // bodyMessage()
               ],
             ),
           ),
@@ -151,19 +160,4 @@ class _LoginPageState extends State<LoginPage> {
       ),
     );
   }
-
-  // Widget bodyMessage() {
-  //   var state = context.watch<LoginProvider>().loginState;
-  //   var username = context.watch<LoginProvider>().username;
-  //   switch (state) {
-  //     case StateLogin.initial:
-  //       return const SizedBox();
-  //     case StateLogin.success:
-  //       return Text('Selamat datang $username');
-  //     case StateLogin.error:
-  //       return Text(context.watch<LoginProvider>().messageError);
-  //     default:
-  //       return const SizedBox();
-  //   }
-  // }
 }

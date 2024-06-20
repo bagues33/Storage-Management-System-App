@@ -56,7 +56,7 @@ class _CategoryPageState extends State<CategoryPage> {
   }
 
   Widget bodyData(BuildContext context, CategoryState state) {
-    Text('Product Page');
+    Text('Category Page');
     switch (state) {
       case CategoryState.success:
         var dataResult = context.watch<CategoryProvider>().listCategory;

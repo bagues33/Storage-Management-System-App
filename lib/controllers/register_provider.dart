@@ -1,7 +1,6 @@
 import 'dart:io';
 
 import 'package:flutter/material.dart';
-import 'package:storage_management_app/utils/push_notification_service.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -12,7 +11,6 @@ import 'package:storage_management_app/views/login_page.dart';
 enum RegisterState { initial, success, error, loading }
 
 class RegisterProvider extends ChangeNotifier {
-  PushNotificationService pushNotificationService = PushNotificationService();
   TextEditingController usernameController = TextEditingController();
   TextEditingController passwordController = TextEditingController();
 
@@ -23,14 +21,11 @@ class RegisterProvider extends ChangeNotifier {
   File? imageFile;
 
   Future<String?> registerAPI(String username, String password) async {
-    var url = Uri.parse(
-        'http://192.168.100.178:3000/api/auth/register'); // Ganti dengan URL API lokal Anda
+    var url = Uri.parse('http://192.168.100.178:3000/api/auth/register');
 
     var request = http.MultipartRequest('POST', url);
     request.fields['username'] = username;
     request.fields['password'] = password;
-
-    print('Image file: $imageFile');
 
     if (imageFile != null) {
       request.files
@@ -44,31 +39,27 @@ class RegisterProvider extends ChangeNotifier {
     var data = jsonDecode(responseString);
 
     if (response.statusCode == 200) {
-      return null; // Pendaftaran berhasil, kembalikan null
+      return null;
     } else {
-      print(response);
-      return data['error']; // Terjadi error, kembalikan pesan error
+      return data['error'];
     }
   }
 
   void processRegister(
       BuildContext context, GlobalKey<FormState> formKey) async {
     if (formKey.currentState!.validate()) {
-      state = RegisterState.loading; // Set state to loading here
-    notifyListeners(); // Notify listeners about the state change
-      print(state);
+      state = RegisterState.loading;
+      notifyListeners();
       String? error =
           await registerAPI(usernameController.text, passwordController.text);
       if (error == null) {
         username = usernameController.text;
         state = RegisterState.success;
-        pushNotificationService.showNotification(
-            'Success', 'Congratulation. You have successfully for register');
+        notifyListeners();
         usernameController.clear();
         passwordController.clear();
         showAlertSuccessLogin(
             context, 'Great Work!', 'You have successfully registered');
-        print(state);
       } else {
         messageError = error;
         state = RegisterState.error;
@@ -87,7 +78,7 @@ class RegisterProvider extends ChangeNotifier {
     notifyListeners();
   }
 
-  Future pickImage() async {
+  Future pickImage(BuildContext context) async {
     final ImagePicker _picker = ImagePicker();
     final XFile? image = await _picker.pickImage(source: ImageSource.gallery);
     if (image != null) {
@@ -99,7 +90,8 @@ class RegisterProvider extends ChangeNotifier {
         imageFile = File(image.path);
         notifyListeners();
       } else {
-        // Tampilkan pesan error bahwa format gambar tidak didukung
+        alertUploadImage(context, 'File not supported', 'Please upload a jpg, jpeg or png file');
+        print('File not supported');
       }
     }
   }

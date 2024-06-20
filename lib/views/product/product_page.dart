@@ -82,7 +82,6 @@ class _ProductPageState extends State<ProductPage> {
                         fit: BoxFit.cover,
                         errorBuilder: (BuildContext context, Object exception,
                             StackTrace? stackTrace) {
-                          // You can return an Image.asset here
                           return Image.asset(
                             'lib/assets/images/default_image.png',
                             fit: BoxFit.cover,

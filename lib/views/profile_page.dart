@@ -32,27 +32,37 @@ class _ProfilePageState extends State<ProfilePage> {
 
   Widget _buildProfileImage() {
     var profileProvider = context.watch<ProfileProvider>();
+    Widget imageWidget;
+
     if (profileProvider.imageFile != null) {
-      return Image.file(
+      imageWidget = Image.file(
         profileProvider.imageFile!,
         width: 100,
         height: 100,
+        fit: BoxFit.cover,
       );
     } else if (profileProvider.imageFile == null &&
         profileProvider.image != null &&
         profileProvider.image != '') {
-      return Image.network(
+      imageWidget = Image.network(
         profileProvider.imageUrl!,
         width: 100,
         height: 100,
+        fit: BoxFit.cover,
       );
     } else {
-      return Image.asset(
+      imageWidget = Image.asset(
         'lib/assets/images/profile.png',
         width: 100,
         height: 100,
+        fit: BoxFit.cover,
       );
     }
+
+    return ClipRRect(
+      borderRadius: BorderRadius.circular(50),
+      child: imageWidget,
+    );
   }
 
   Widget bodyData(BuildContext context, ProfileState state) {
@@ -97,10 +107,20 @@ class _ProfilePageState extends State<ProfilePage> {
                   const SizedBox(height: 20),
                   TextFormField(
                     controller: profileProvider.passwordController,
-                    decoration: const InputDecoration(
-                      labelText: 'Password',
-                      border: OutlineInputBorder(),
-                    ),
+                    obscureText: profileProvider.obscurePassword,
+                    decoration: InputDecoration(
+                        suffixIcon: IconButton(
+                            onPressed: () {
+                              context
+                                  .read<ProfileProvider>()
+                                  .actionObscurePassword();
+                            },
+                            icon: Icon(profileProvider.obscurePassword == true
+                                ? Icons.visibility_off
+                                : Icons.visibility)),
+                        border: const OutlineInputBorder(
+                            borderRadius:
+                                BorderRadius.all(Radius.circular(10)))),
                   ),
                   const SizedBox(height: 20),
                   Row(
@@ -109,14 +129,13 @@ class _ProfilePageState extends State<ProfilePage> {
                         style: ElevatedButton.styleFrom(
                             backgroundColor: Color.fromRGBO(26, 33, 48, 1),
                             elevation: 5),
-                        onPressed:
-                            profileProvider.state == ProfileState.loading
-                                ? null
-                                : () {
-                                    context
-                                        .read<ProfileProvider>()
-                                        .updateProfile(context);
-                                  },
+                        onPressed: profileProvider.state == ProfileState.loading
+                            ? null
+                            : () {
+                                context
+                                    .read<ProfileProvider>()
+                                    .updateProfile(context);
+                              },
                         child: profileProvider.state == ProfileState.loading
                             ? CircularProgressIndicator(
                                 valueColor:
@@ -124,8 +143,7 @@ class _ProfilePageState extends State<ProfilePage> {
                               )
                             : const Text(
                                 'Update Profile',
-                                style: TextStyle(
-                                    color: Colors.white),
+                                style: TextStyle(color: Colors.white),
                               ),
                       ),
                       const SizedBox(width: 20),

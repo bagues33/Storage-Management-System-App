@@ -15,6 +15,18 @@ class RegisterPage extends StatefulWidget {
 class _RegisterPageState extends State<RegisterPage> {
   final formKey = GlobalKey<FormState>();
   String? pathFiles;
+
+  @override
+  void initState() {
+    super.initState();
+    WidgetsBinding.instance?.addPostFrameCallback((_) {
+      var registerProvider = context.read<RegisterProvider>();
+      registerProvider.usernameController.clear();
+      registerProvider.passwordController.clear();
+      registerProvider.imageFile = null;
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
     var sizeWidth = MediaQuery.sizeOf(context).width;
@@ -37,22 +49,33 @@ class _RegisterPageState extends State<RegisterPage> {
                   ),
                 ),
                 const SizedBox(height: 20),
-                if (registerProvider.imageFile != null)
-                  Image.file(
-                    registerProvider.imageFile!,
-                    width: 100,
-                    height: 100,
-                  )
-                else
-                  Image.asset(
-                    'lib/assets/images/profile.png',
-                    width: 100,
-                    height: 100,
+                Align(
+                  alignment: Alignment.center,
+                  child: Card(
+                    shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(50)),
+                    elevation: 5,
+                    child: ClipRRect(
+                      borderRadius: BorderRadius.circular(50),
+                      child: registerProvider.imageFile != null
+                          ? Image.file(
+                              registerProvider.imageFile!,
+                              width: 100,
+                              height: 100,
+                              fit: BoxFit.cover,
+                            )
+                          : Image.asset(
+                              'lib/assets/images/profile.png',
+                              width: 100,
+                              height: 100,
+                              fit: BoxFit.cover,
+                            ),
+                    ),
                   ),
-                const SizedBox(height: 20),
+                ),
                 TextButton(
                   onPressed: () async {
-                    await registerProvider.pickImage();
+                    await registerProvider.pickImage(context);
                   },
                   child: Image.asset(
                     'lib/assets/images/photo.png',
@@ -148,7 +171,6 @@ class _RegisterPageState extends State<RegisterPage> {
     setState(() {
       pathFiles = image!.path;
     });
-    print(pathFiles);
   }
 
   Widget buttonRegister(
